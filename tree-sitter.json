@@ -1,0 +1,39 @@
+{
+  "$schema": "https://tree-sitter.github.io/tree-sitter/assets/schemas/config.schema.json",
+  "grammars": [
+    {
+      "name": "klipper",
+      "camelcase": "Klipper",
+      "title": "Klipper",
+      "scope": "source.klipper",
+      "file-types": [
+        "cfg"
+      ],
+      "injection-regex": "^klipper$",
+      "class-name": "TreeSitterKlipper"
+    }
+  ],
+  "metadata": {
+    "version": "0.1.0",
+    "license": "GPL-3.0",
+    "description": "Klipper grammar for tree-sitter",
+    "authors": [
+      {
+        "name": "Dmitry Sorkin",
+        "email": "dsorkin@localhost"
+      }
+    ],
+    "links": {
+      "repository": "https://github.com/dsorkin/tree-sitter-klipper"
+    }
+  },
+  "bindings": {
+    "c": true,
+    "go": true,
+    "node": true,
+    "python": true,
+    "rust": true,
+    "swift": true,
+    "zig": false
+  }
+}

@@ -1,0 +1,250 @@
+================================================================================
+section with single setting
+================================================================================
+
+[printer]
+kinematics: corexy
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (section
+    name: (section_name)
+    (section_item
+      (setting
+        key: (setting_key)
+        separator: (setting_separator)
+        value: (value_text)))))
+
+================================================================================
+section name with space and argument
+================================================================================
+
+[gcode_macro MY_STARTUP]
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (section
+    name: (section_name)))
+
+================================================================================
+key with = separator
+================================================================================
+
+[printer]
+max_velocity = 300
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (section
+    name: (section_name)
+    (section_item
+      (setting
+        key: (setting_key)
+        separator: (setting_separator)
+        value: (value_text)))))
+
+================================================================================
+key with : separator
+================================================================================
+
+[printer]
+kinematics: cartesian
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (section
+    name: (section_name)
+    (section_item
+      (setting
+        key: (setting_key)
+        separator: (setting_separator)
+        value: (value_text)))))
+
+================================================================================
+key with value containing url
+================================================================================
+
+[server]
+host: mqtt://broker:1883/topic
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (section
+    name: (section_name)
+    (section_item
+      (setting
+        key: (setting_key)
+        separator: (setting_separator)
+        value: (value_text)))))
+
+================================================================================
+inline comment is part of value
+================================================================================
+
+[printer]
+kinematics: corexy  # cartesian
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (section
+    name: (section_name)
+    (section_item
+      (setting
+        key: (setting_key)
+        separator: (setting_separator)
+        value: (value_text)))))
+
+================================================================================
+hash with no preceding space is part of value
+================================================================================
+
+[printer]
+host: mqtt://broker#1883
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (section
+    name: (section_name)
+    (section_item
+      (setting
+        key: (setting_key)
+        separator: (setting_separator)
+        value: (value_text)))))
+
+================================================================================
+full-line comment with hash
+================================================================================
+
+# header comment
+[printer]
+kinematics: corexy
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (comment
+    (line_comment))
+  (section
+    name: (section_name)
+    (section_item
+      (setting
+        key: (setting_key)
+        separator: (setting_separator)
+        value: (value_text)))))
+
+================================================================================
+full-line comment with semicolon
+================================================================================
+
+[printer]
+; semi-colon comment
+kinematics: corexy
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (section
+    name: (section_name)
+    (section_item
+      (comment
+        (line_comment)))
+    (section_item
+      (setting
+        key: (setting_key)
+        separator: (setting_separator)
+        value: (value_text)))))
+
+================================================================================
+SAVE_CONFIG block
+================================================================================
+
+[stepper_x]
+position_endstop: 224.000
+
+#*# <---------------------- SAVE_CONFIG ---------------------->
+#*# DO NOT EDIT THIS BLOCK OR BELOW. The contents are auto-generated.
+#*# [stepper_x]
+#*# position_endstop = 224.000
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (section
+    name: (section_name)
+    (section_item
+      (setting
+        key: (setting_key)
+        separator: (setting_separator)
+        value: (value_text))))
+  (comment
+    (save_config_line))
+  (comment
+    (save_config_line))
+  (comment
+    (save_config_line))
+  (comment
+    (save_config_line)))
+
+================================================================================
+empty section then content
+================================================================================
+
+[empty]
+[printer]
+kinematics: corexy
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (section
+    name: (section_name))
+  (section
+    name: (section_name)
+    (section_item
+      (setting
+        key: (setting_key)
+        separator: (setting_separator)
+        value: (value_text)))))
+
+================================================================================
+value with negation prefix
+================================================================================
+
+[stepper_x]
+dir_pin: !PE3
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (section
+    name: (section_name)
+    (section_item
+      (setting
+        key: (setting_key)
+        separator: (setting_separator)
+        value: (value_text)))))
+
+================================================================================
+value with virtual pin
+================================================================================
+
+[stepper_x]
+endstop_pin: tmc2209_stepper_x:virtual_endstop
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (section
+    name: (section_name)
+    (section_item
+      (setting
+        key: (setting_key)
+        separator: (setting_separator)
+        value: (value_text)))))
