@@ -99,8 +99,7 @@ kinematics: corexy  # cartesian
       (setting
         key: (setting_key)
         separator: (setting_separator)
-        value: (value_text)
-        inline_comment: (inline_comment)))))
+        value: (value_text)))))
 
 ================================================================================
 hash with no preceding space is part of value
@@ -292,11 +291,9 @@ target: !PIN # inverted pin
       (setting
         key: (setting_key)
         separator: (setting_separator)
-        value: (value_text)
-        inline_comment: (inline_comment)))
+        value: (value_text)))
     (section_item
       (setting
         key: (setting_key)
         separator: (setting_separator)
-        value: (value_text)
-        inline_comment: (inline_comment)))))
+        value: (value_text)))))

@@ -204,7 +204,10 @@ module.exports = grammar({
 						$.gcode_string,
 					),
 					$.gcode_identifier,
-					seq(token.immediate(prec(3, /=/)), $.gcode_arg_value),
+					seq(
+						token.immediate(prec(3, /=/)),  // `=`
+						choice($.gcode_arg_value, $.jinja_bare_expression),
+					),
 					alias(
 						token.immediate(
 							prec(
@@ -245,7 +248,10 @@ module.exports = grammar({
 							$.gcode_string,
 						),
 						$.gcode_identifier,
-						seq(token.immediate(prec(3, /=/)), $.gcode_arg_value),
+						seq(
+							token.immediate(prec(3, /=/)),  // `=`
+							choice($.gcode_arg_value, $.jinja_bare_expression),
+						),
 						alias(
 							token.immediate(
 								prec(
@@ -287,22 +293,14 @@ module.exports = grammar({
 			token(
 				prec(
 					3,
-					/(if|elif|else|endif|for|endfor|set|not|and|or|is|true|True|false|False)[^A-Za-z0-9_]/,
+					/(if|elif|else|endif|for|endfor|set|not|and|or|is|true|True|false|False)/,
 				),
 			),
 		jinja_builtin: ($) =>
-			choice(
-				token(
-					prec(
-						2,
-						/(default|int|float|string|list|dict|abs|max|min|sum|length|count|sort|reverse|map|join|upper|lower|capitalize|title|replace|trim|truncate|striptags|escape|safe|forceescape|attr|batch|groupby|select|reject|selectattr|rejectattr|items|pprint|urlencode|wordcount|wordwrap|filesizeformat|indent|center|first|last|slice|random|in|none|None|range|defined|undefined|even|odd|divisibleby|iterable|mapping|number|sequence|callable|test|sameas)[^A-Za-z0-9_{}]/,
-					),
-				),
-				token(
-					prec(
-						1,
-						/(default|int|float|string|list|dict|abs|max|min|sum|length|count|sort|reverse|map|join|upper|lower|capitalize|title|replace|trim|truncate|striptags|escape|safe|forceescape|attr|batch|groupby|select|reject|selectattr|rejectattr|items|pprint|urlencode|wordcount|wordwrap|filesizeformat|indent|center|first|last|slice|random|in|none|None|range|defined|undefined|even|odd|divisibleby|iterable|mapping|number|sequence|callable|test|sameas)/,
-					),
+			token(
+				prec(
+					2,
+					/(default|int|float|string|list|dict|abs|max|min|sum|length|count|sort|reverse|map|join|upper|lower|capitalize|title|replace|trim|truncate|striptags|escape|safe|forceescape|attr|batch|groupby|select|reject|selectattr|rejectattr|items|pprint|urlencode|wordcount|wordwrap|filesizeformat|indent|center|first|last|slice|random|in|none|None|range|defined|undefined|even|odd|divisibleby|iterable|mapping|number|sequence|callable|test|sameas)/,
 				),
 			),
 		jinja_string: ($) => token(prec(2, /'[^'\n]*'|"[^"\n]*"/)),

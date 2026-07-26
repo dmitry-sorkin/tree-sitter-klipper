@@ -159,11 +159,6 @@
     }
   },
   {
-    "type": "jinja_builtin",
-    "named": true,
-    "fields": {}
-  },
-  {
     "type": "jinja_content",
     "named": true,
     "fields": {},
@@ -466,6 +461,10 @@
   },
   {
     "type": "jinja_bracket",
+    "named": true
+  },
+  {
+    "type": "jinja_builtin",
     "named": true
   },
   {

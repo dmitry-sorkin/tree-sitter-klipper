@@ -240,13 +240,13 @@ gcode:
             command: (gcode_command_name)
             (gcode_text)
             (gcode_command)
-            (gcode_number)))
+            (gcode_arg_value)))
         (gcode_line
           (gcode_line_content
             command: (gcode_command_name)
             (gcode_text)
             (gcode_command)
-            (gcode_string)))
+            (gcode_arg_value)))
         (gcode_line
           (gcode_line_content
             command: (gcode_command_name)
@@ -356,9 +356,11 @@ gcode:
               (jinja_content
                 (jinja_variable)
                 (jinja_operator)
+                (jinja_builtin)
                 (jinja_variable)))
             (jinja_expression
               (jinja_content
+                (jinja_keyword)
                 (jinja_variable)
                 (jinja_operator)
                 (jinja_variable)))
@@ -464,6 +466,7 @@ gcode:
                 (jinja_variable)
                 (jinja_operator)
                 (jinja_builtin)
+                (jinja_bracket)
                 (jinja_number)
                 (jinja_bracket)
                 (jinja_operator)
@@ -492,22 +495,22 @@ gcode:
             (gcode_command_name)
             (gcode_text)
             (gcode_command)
-            (gcode_identifier)
+            (gcode_arg_value)
             (gcode_text)
             (gcode_command)
-            (gcode_identifier)
+            (gcode_arg_value)
             (gcode_text)
             (gcode_command)
-            (gcode_number)))
+            (gcode_arg_value)))
         (gcode_line
           (gcode_line_content
             (gcode_command_name)
             (gcode_text)
             (gcode_command)
-            (gcode_identifier)
+            (gcode_arg_value)
             (gcode_text)
             (gcode_command)
-            (gcode_identifier)))))))
+            (gcode_arg_value)))))))
 
 ================================================================================
 gcode block: jinja builtin filters and tests
@@ -534,6 +537,7 @@ gcode:
                 (jinja_variable)
                 (jinja_operator)
                 (jinja_builtin)
+                (jinja_bracket)
                 (jinja_number)
                 (jinja_bracket)
                 (jinja_operator)
@@ -597,9 +601,9 @@ gcode:
             command: (gcode_command_name)
             (gcode_text)
             (gcode_command)
-            (gcode_identifier)
+            (gcode_arg_value)
             (gcode_text)
             (gcode_command)
             (gcode_text)
             (gcode_command)
-            (gcode_string)))))))
+            (gcode_arg_value)))))))
