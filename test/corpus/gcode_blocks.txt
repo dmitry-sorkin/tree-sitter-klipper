@@ -17,18 +17,18 @@ gcode:
         separator: (setting_separator)
         (gcode_line
           (gcode_line_content
-            (gcode_word)
+            (gcode_command)
             (gcode_text)
-            (gcode_word)
+            (gcode_parameter)
             (gcode_text)
-            (gcode_word)
+            (gcode_parameter)
             (gcode_text)
-            (gcode_word)))
+            (gcode_parameter)))
         (gcode_line
           (gcode_line_content
-            (gcode_word)
+            (gcode_command)
             (gcode_text)
-            (gcode_word)))))))
+            (gcode_parameter)))))))
 
 ================================================================================
 gcode block: mixed Jinja if/endif with G-code inside
@@ -52,23 +52,34 @@ gcode:
         separator: (setting_separator)
         (gcode_line
           (gcode_line_content
-            (jinja_tag)))
+            (jinja_tag
+              (jinja_content
+                (jinja_keyword)
+                (jinja_variable)
+                (jinja_operator)
+                (jinja_variable)
+                (jinja_operator)
+                (jinja_variable)))))
         (gcode_line
           (gcode_line_content
-            (gcode_word)
+            (gcode_command)
             (gcode_text)
-            (gcode_word)))
+            (gcode_parameter)))
         (gcode_line
           (gcode_line_content
-            (jinja_tag)))
+            (jinja_tag
+              (jinja_content
+                (jinja_keyword)))))
         (gcode_line
           (gcode_line_content
-            (gcode_word)
+            (gcode_command)
             (gcode_text)
-            (gcode_word)))
+            (gcode_parameter)))
         (gcode_line
           (gcode_line_content
-            (jinja_tag)))))))
+            (jinja_tag
+              (jinja_content
+                (jinja_keyword)))))))))
 
 ================================================================================
 gcode block: {{ variable }} interpolation in a G-code parameter
@@ -88,12 +99,20 @@ gcode:
         separator: (setting_separator)
         (gcode_line
           (gcode_line_content
-            (gcode_word)
+            (gcode_command)
             (gcode_text)
-            (gcode_word)
-            (jinja_expression)
+            (gcode_parameter)
+            (jinja_expression
+              (jinja_content
+                (jinja_variable)
+                (jinja_operator)
+                (jinja_variable)
+                (jinja_operator)
+                (jinja_variable)
+                (jinja_operator)
+                (jinja_variable)))
             (gcode_text)
-            (gcode_word)))))))
+            (gcode_parameter)))))))
 
 ================================================================================
 gcode block: {# jinja #} comment
@@ -115,15 +134,15 @@ gcode:
         separator: (setting_separator)
         (gcode_line
           (gcode_line_content
-            (gcode_word)))
+            (gcode_command)))
         (gcode_line
           (gcode_line_content
             (jinja_comment)))
         (gcode_line
           (gcode_line_content
-            (gcode_word)
+            (gcode_command)
             (gcode_text)
-            (gcode_word)))))))
+            (gcode_parameter)))))))
 
 ================================================================================
 gcode block: # text comment and ; text comment inside body
@@ -148,9 +167,9 @@ gcode:
             (gcode_line_comment)))
         (gcode_line
           (gcode_line_content
-            (gcode_word)
+            (gcode_command)
             (gcode_text)
-            (gcode_word)))
+            (gcode_parameter)))
         (gcode_line
           (gcode_line_content
             (gcode_line_comment)))))))
@@ -177,19 +196,19 @@ gcode:
         separator: (setting_separator)
         (gcode_line
           (gcode_line_content
-            (gcode_word)))
+            (gcode_command)))
         (gcode_line
           (gcode_line_content
-            (gcode_word)
+            (gcode_command)
             (gcode_text)
-            (gcode_word)
+            (gcode_parameter)
             (gcode_text)
-            (gcode_word)))
+            (gcode_parameter)))
         (gcode_line
           (gcode_line_content
-            (gcode_word)
+            (gcode_command)
             (gcode_text)
-            (gcode_word)))))))
+            (gcode_parameter)))))))
 
 ================================================================================
 gcode block: Klipper extended commands with KEY=value parameters
@@ -211,22 +230,23 @@ gcode:
         separator: (setting_separator)
         (gcode_line
           (gcode_line_content
-            (gcode_word)
+            (gcode_command)
             (gcode_text)
-            (gcode_word)
+            (gcode_command)
             (gcode_text)
-            (gcode_word)))
+            (gcode_number)))
         (gcode_line
           (gcode_line_content
-            (gcode_word)
+            (gcode_command)
             (gcode_text)
-            (gcode_word)
-            (gcode_text)))
+            (gcode_command)
+            (gcode_text)
+            (gcode_string)))
         (gcode_line
           (gcode_line_content
-            (gcode_word)
+            (gcode_command)
             (gcode_text)
-            (gcode_word)
+            (gcode_parameter)
             (gcode_text)))))))
 
 ================================================================================
@@ -247,17 +267,17 @@ gcode: M104 S0
       (gcode_block
         separator: (setting_separator)
         first_line: (gcode_line_content
-          (gcode_word)
+          (gcode_command)
           (gcode_text)
-          (gcode_word))
+          (gcode_parameter))
         (gcode_line
           (gcode_line_content
-            (gcode_word)))
+            (gcode_command)))
         (gcode_line
           (gcode_line_content
-            (gcode_word)
+            (gcode_command)
             (gcode_text)
-            (gcode_word)))))))
+            (gcode_parameter)))))))
 
 ================================================================================
 gcode block: empty gcode: with no body
@@ -294,7 +314,45 @@ gcode:
         separator: (setting_separator)
         (gcode_line
           (gcode_line_content
-            (klipper_action)))
+            (klipper_action
+              name: (klipper_action_name)
+              (jinja_string))))
         (gcode_line
           (gcode_line_content
-            (klipper_action)))))))
+            (klipper_action
+              name: (klipper_action_name)
+              (jinja_string))))))))
+
+================================================================================
+gcode block: nested Jinja content and bare-brace interpolation
+================================================================================
+
+[gcode_macro TEST]
+gcode:
+    {% if home_all or 'Z' in params %}
+    G1 X{ printer.toolhead.position.x }
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (section
+    name: (section_name)
+    (section_item
+      (gcode_block
+        separator: (setting_separator)
+        (gcode_line
+          (gcode_line_content
+            (jinja_tag
+              (jinja_content
+                (jinja_keyword)
+                (jinja_variable)
+                (jinja_keyword)
+                (jinja_string)
+                (jinja_keyword)
+                (jinja_variable)))))
+        (gcode_line
+          (gcode_line_content
+            (gcode_command)
+            (gcode_text)
+            (gcode_parameter)
+            (gcode_text)))))))

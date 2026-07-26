@@ -78,15 +78,27 @@
       "required": true,
       "types": [
         {
+          "type": "gcode_command",
+          "named": true
+        },
+        {
           "type": "gcode_line_comment",
           "named": true
         },
         {
-          "type": "gcode_text",
+          "type": "gcode_number",
           "named": true
         },
         {
-          "type": "gcode_word",
+          "type": "gcode_parameter",
+          "named": true
+        },
+        {
+          "type": "gcode_string",
+          "named": true
+        },
+        {
+          "type": "gcode_text",
           "named": true
         },
         {
@@ -103,6 +115,105 @@
         },
         {
           "type": "klipper_action",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "jinja_content",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "jinja_keyword",
+          "named": true
+        },
+        {
+          "type": "jinja_number",
+          "named": true
+        },
+        {
+          "type": "jinja_operator",
+          "named": true
+        },
+        {
+          "type": "jinja_string",
+          "named": true
+        },
+        {
+          "type": "jinja_variable",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "jinja_expression",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "jinja_content",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "jinja_tag",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "jinja_content",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "klipper_action",
+    "named": true,
+    "fields": {
+      "name": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "klipper_action_name",
+            "named": true
+          }
+        ]
+      }
+    },
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "jinja_number",
+          "named": true
+        },
+        {
+          "type": "jinja_operator",
+          "named": true
+        },
+        {
+          "type": "jinja_string",
+          "named": true
+        },
+        {
+          "type": "jinja_variable",
           "named": true
         }
       ]
@@ -218,6 +329,18 @@
     }
   },
   {
+    "type": "%}",
+    "named": false
+  },
+  {
+    "type": "(",
+    "named": false
+  },
+  {
+    "type": ")",
+    "named": false
+  },
+  {
     "type": "[",
     "named": false
   },
@@ -226,11 +349,23 @@
     "named": false
   },
   {
-    "type": "gcode",
-    "named": false
+    "type": "gcode_command",
+    "named": true
   },
   {
     "type": "gcode_line_comment",
+    "named": true
+  },
+  {
+    "type": "gcode_number",
+    "named": true
+  },
+  {
+    "type": "gcode_parameter",
+    "named": true
+  },
+  {
+    "type": "gcode_string",
     "named": true
   },
   {
@@ -238,23 +373,31 @@
     "named": true
   },
   {
-    "type": "gcode_word",
-    "named": true
-  },
-  {
     "type": "jinja_comment",
     "named": true
   },
   {
-    "type": "jinja_expression",
+    "type": "jinja_keyword",
     "named": true
   },
   {
-    "type": "jinja_tag",
+    "type": "jinja_number",
     "named": true
   },
   {
-    "type": "klipper_action",
+    "type": "jinja_operator",
+    "named": true
+  },
+  {
+    "type": "jinja_string",
+    "named": true
+  },
+  {
+    "type": "jinja_variable",
+    "named": true
+  },
+  {
+    "type": "klipper_action_name",
     "named": true
   },
   {
@@ -280,5 +423,25 @@
   {
     "type": "value_text",
     "named": true
+  },
+  {
+    "type": "{",
+    "named": false
+  },
+  {
+    "type": "{%",
+    "named": false
+  },
+  {
+    "type": "{{",
+    "named": false
+  },
+  {
+    "type": "}",
+    "named": false
+  },
+  {
+    "type": "}}",
+    "named": false
   }
 ]

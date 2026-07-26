@@ -141,8 +141,15 @@
       "type": "SEQ",
       "members": [
         {
-          "type": "STRING",
-          "value": "gcode"
+          "type": "TOKEN",
+          "content": {
+            "type": "PREC",
+            "value": 1,
+            "content": {
+              "type": "PATTERN",
+              "value": "[a-z_]*gcode"
+            }
+          }
         },
         {
           "type": "FIELD",
@@ -224,68 +231,20 @@
           "type": "CHOICE",
           "members": [
             {
-              "type": "ALIAS",
-              "content": {
-                "type": "IMMEDIATE_TOKEN",
-                "content": {
-                  "type": "PREC",
-                  "value": 2,
-                  "content": {
-                    "type": "PATTERN",
-                    "value": "\\{%[^}%]*%\\}"
-                  }
-                }
-              },
-              "named": true,
-              "value": "jinja_tag"
+              "type": "SYMBOL",
+              "name": "jinja_tag"
             },
             {
-              "type": "ALIAS",
-              "content": {
-                "type": "IMMEDIATE_TOKEN",
-                "content": {
-                  "type": "PREC",
-                  "value": 2,
-                  "content": {
-                    "type": "PATTERN",
-                    "value": "\\{\\{[^}]*\\}\\}"
-                  }
-                }
-              },
-              "named": true,
-              "value": "jinja_expression"
+              "type": "SYMBOL",
+              "name": "jinja_expression"
             },
             {
-              "type": "ALIAS",
-              "content": {
-                "type": "IMMEDIATE_TOKEN",
-                "content": {
-                  "type": "PREC",
-                  "value": 2,
-                  "content": {
-                    "type": "PATTERN",
-                    "value": "\\{#[\\s\\S]*?#\\}"
-                  }
-                }
-              },
-              "named": true,
-              "value": "jinja_comment"
+              "type": "SYMBOL",
+              "name": "jinja_comment"
             },
             {
-              "type": "ALIAS",
-              "content": {
-                "type": "IMMEDIATE_TOKEN",
-                "content": {
-                  "type": "PREC",
-                  "value": 2,
-                  "content": {
-                    "type": "PATTERN",
-                    "value": "\\{action_[a-z_]+\\([^}]*\\)\\}"
-                  }
-                }
-              },
-              "named": true,
-              "value": "klipper_action"
+              "type": "SYMBOL",
+              "name": "klipper_action"
             },
             {
               "type": "ALIAS",
@@ -312,12 +271,60 @@
                   "value": 3,
                   "content": {
                     "type": "PATTERN",
-                    "value": "[A-Z][A-Z0-9_]*|[0-9]+(\\.[0-9]+)?|\"[^\"\\n]*\""
+                    "value": "[GM][0-9]+(\\.[0-9]+)?|[A-Z][A-Z0-9_]*[A-Z_][A-Z0-9_]*"
                   }
                 }
               },
               "named": true,
-              "value": "gcode_word"
+              "value": "gcode_command"
+            },
+            {
+              "type": "ALIAS",
+              "content": {
+                "type": "IMMEDIATE_TOKEN",
+                "content": {
+                  "type": "PREC",
+                  "value": 2,
+                  "content": {
+                    "type": "PATTERN",
+                    "value": "[A-Z][0-9]*\\.?[0-9]*"
+                  }
+                }
+              },
+              "named": true,
+              "value": "gcode_parameter"
+            },
+            {
+              "type": "ALIAS",
+              "content": {
+                "type": "IMMEDIATE_TOKEN",
+                "content": {
+                  "type": "PREC",
+                  "value": 2,
+                  "content": {
+                    "type": "PATTERN",
+                    "value": "[0-9]+(\\.[0-9]+)?"
+                  }
+                }
+              },
+              "named": true,
+              "value": "gcode_number"
+            },
+            {
+              "type": "ALIAS",
+              "content": {
+                "type": "IMMEDIATE_TOKEN",
+                "content": {
+                  "type": "PREC",
+                  "value": 2,
+                  "content": {
+                    "type": "PATTERN",
+                    "value": "\"[^\"\\n]*\"|'[^'\\n]*'"
+                  }
+                }
+              },
+              "named": true,
+              "value": "gcode_string"
             },
             {
               "type": "ALIAS",
@@ -328,7 +335,7 @@
                   "value": 1,
                   "content": {
                     "type": "PATTERN",
-                    "value": "[ \\t]+|[^A-Z{#;%\\s\\n0-9][^A-Z0-9\\n]*"
+                    "value": "[ \\t]+|[^A-Z{#;%\\s\\n0-9\"'][^A-Z0-9\\n\"']*|\\{[ \\t][^}\\n]*\\}"
                   }
                 }
               },
@@ -343,68 +350,20 @@
             "type": "CHOICE",
             "members": [
               {
-                "type": "ALIAS",
-                "content": {
-                  "type": "IMMEDIATE_TOKEN",
-                  "content": {
-                    "type": "PREC",
-                    "value": 2,
-                    "content": {
-                      "type": "PATTERN",
-                      "value": "\\{%[^}%]*%\\}"
-                    }
-                  }
-                },
-                "named": true,
-                "value": "jinja_tag"
+                "type": "SYMBOL",
+                "name": "jinja_tag"
               },
               {
-                "type": "ALIAS",
-                "content": {
-                  "type": "IMMEDIATE_TOKEN",
-                  "content": {
-                    "type": "PREC",
-                    "value": 2,
-                    "content": {
-                      "type": "PATTERN",
-                      "value": "\\{\\{[^}]*\\}\\}"
-                    }
-                  }
-                },
-                "named": true,
-                "value": "jinja_expression"
+                "type": "SYMBOL",
+                "name": "jinja_expression"
               },
               {
-                "type": "ALIAS",
-                "content": {
-                  "type": "IMMEDIATE_TOKEN",
-                  "content": {
-                    "type": "PREC",
-                    "value": 2,
-                    "content": {
-                      "type": "PATTERN",
-                      "value": "\\{#[\\s\\S]*?#\\}"
-                    }
-                  }
-                },
-                "named": true,
-                "value": "jinja_comment"
+                "type": "SYMBOL",
+                "name": "jinja_comment"
               },
               {
-                "type": "ALIAS",
-                "content": {
-                  "type": "IMMEDIATE_TOKEN",
-                  "content": {
-                    "type": "PREC",
-                    "value": 2,
-                    "content": {
-                      "type": "PATTERN",
-                      "value": "\\{action_[a-z_]+\\([^}]*\\)\\}"
-                    }
-                  }
-                },
-                "named": true,
-                "value": "klipper_action"
+                "type": "SYMBOL",
+                "name": "klipper_action"
               },
               {
                 "type": "ALIAS",
@@ -431,12 +390,60 @@
                     "value": 3,
                     "content": {
                       "type": "PATTERN",
-                      "value": "[A-Z][A-Z0-9_]*|[0-9]+(\\.[0-9]+)?|\"[^\"\\n]*\""
+                      "value": "[GM][0-9]+(\\.[0-9]+)?|[A-Z][A-Z0-9_]*[A-Z_][A-Z0-9_]*"
                     }
                   }
                 },
                 "named": true,
-                "value": "gcode_word"
+                "value": "gcode_command"
+              },
+              {
+                "type": "ALIAS",
+                "content": {
+                  "type": "IMMEDIATE_TOKEN",
+                  "content": {
+                    "type": "PREC",
+                    "value": 2,
+                    "content": {
+                      "type": "PATTERN",
+                      "value": "[A-Z][0-9]*\\.?[0-9]*"
+                    }
+                  }
+                },
+                "named": true,
+                "value": "gcode_parameter"
+              },
+              {
+                "type": "ALIAS",
+                "content": {
+                  "type": "IMMEDIATE_TOKEN",
+                  "content": {
+                    "type": "PREC",
+                    "value": 2,
+                    "content": {
+                      "type": "PATTERN",
+                      "value": "[0-9]+(\\.[0-9]+)?"
+                    }
+                  }
+                },
+                "named": true,
+                "value": "gcode_number"
+              },
+              {
+                "type": "ALIAS",
+                "content": {
+                  "type": "IMMEDIATE_TOKEN",
+                  "content": {
+                    "type": "PREC",
+                    "value": 2,
+                    "content": {
+                      "type": "PATTERN",
+                      "value": "\"[^\"\\n]*\"|'[^'\\n]*'"
+                    }
+                  }
+                },
+                "named": true,
+                "value": "gcode_string"
               },
               {
                 "type": "ALIAS",
@@ -447,7 +454,7 @@
                     "value": 1,
                     "content": {
                       "type": "PATTERN",
-                      "value": "[ \\t]+|[^A-Z{#;%\\s\\n0-9][^A-Z0-9\\n]*"
+                      "value": "[ \\t]+|[^A-Z{#;%\\s\\n0-9\"'][^A-Z0-9\\n\"']*|\\{[ \\t][^}\\n]*\\}"
                     }
                   }
                 },
@@ -460,29 +467,153 @@
       ]
     },
     "jinja_tag": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "IMMEDIATE_TOKEN",
+          "content": {
+            "type": "STRING",
+            "value": "{%"
+          }
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "jinja_content"
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
+        },
+        {
+          "type": "TOKEN",
+          "content": {
+            "type": "PREC",
+            "value": 2,
+            "content": {
+              "type": "STRING",
+              "value": "%}"
+            }
+          }
+        }
+      ]
+    },
+    "jinja_expression": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "IMMEDIATE_TOKEN",
+          "content": {
+            "type": "STRING",
+            "value": "{{"
+          }
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "jinja_content"
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
+        },
+        {
+          "type": "STRING",
+          "value": "}}"
+        }
+      ]
+    },
+    "jinja_content": {
+      "type": "REPEAT1",
+      "content": {
+        "type": "CHOICE",
+        "members": [
+          {
+            "type": "SYMBOL",
+            "name": "jinja_keyword"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "jinja_string"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "jinja_number"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "jinja_operator"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "jinja_variable"
+          }
+        ]
+      }
+    },
+    "jinja_keyword": {
       "type": "TOKEN",
       "content": {
         "type": "PREC",
-        "value": 2,
+        "value": 3,
         "content": {
           "type": "PATTERN",
-          "value": "\\{%[^}%]*%\\}"
+          "value": "((?:if|elif|else|endif|for|endfor|in|set|not|and|or|is|none|None|true|True|false|False|range))"
         }
       }
     },
-    "jinja_expression": {
+    "jinja_string": {
       "type": "TOKEN",
       "content": {
         "type": "PREC",
         "value": 2,
         "content": {
           "type": "PATTERN",
-          "value": "\\{\\{[^}]*\\}\\}"
+          "value": "'[^'\\n]*'|\"[^\"\\n]*\""
+        }
+      }
+    },
+    "jinja_number": {
+      "type": "TOKEN",
+      "content": {
+        "type": "PREC",
+        "value": 2,
+        "content": {
+          "type": "PATTERN",
+          "value": "[0-9]+(\\.[0-9]+)?"
+        }
+      }
+    },
+    "jinja_operator": {
+      "type": "TOKEN",
+      "content": {
+        "type": "PREC",
+        "value": 1,
+        "content": {
+          "type": "PATTERN",
+          "value": "[|()\\x5b\\x5d.,:=+*<>!%_-]+"
+        }
+      }
+    },
+    "jinja_variable": {
+      "type": "TOKEN",
+      "content": {
+        "type": "PREC",
+        "value": 1,
+        "content": {
+          "type": "PATTERN",
+          "value": "[A-Za-z_][A-Za-z0-9_]*"
         }
       }
     },
     "jinja_comment": {
-      "type": "TOKEN",
+      "type": "IMMEDIATE_TOKEN",
       "content": {
         "type": "PREC",
         "value": 2,
@@ -493,13 +624,83 @@
       }
     },
     "klipper_action": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "IMMEDIATE_TOKEN",
+          "content": {
+            "type": "STRING",
+            "value": "{"
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "name",
+          "content": {
+            "type": "SYMBOL",
+            "name": "klipper_action_name"
+          }
+        },
+        {
+          "type": "TOKEN",
+          "content": {
+            "type": "PREC",
+            "value": 2,
+            "content": {
+              "type": "STRING",
+              "value": "("
+            }
+          }
+        },
+        {
+          "type": "REPEAT",
+          "content": {
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "SYMBOL",
+                "name": "jinja_string"
+              },
+              {
+                "type": "SYMBOL",
+                "name": "jinja_number"
+              },
+              {
+                "type": "SYMBOL",
+                "name": "jinja_variable"
+              },
+              {
+                "type": "SYMBOL",
+                "name": "jinja_operator"
+              }
+            ]
+          }
+        },
+        {
+          "type": "TOKEN",
+          "content": {
+            "type": "PREC",
+            "value": 2,
+            "content": {
+              "type": "STRING",
+              "value": ")"
+            }
+          }
+        },
+        {
+          "type": "STRING",
+          "value": "}"
+        }
+      ]
+    },
+    "klipper_action_name": {
       "type": "TOKEN",
       "content": {
         "type": "PREC",
-        "value": 2,
+        "value": 3,
         "content": {
           "type": "PATTERN",
-          "value": "\\{action_[a-z_]+\\([^}]*\\)\\}"
+          "value": "action_[a-z_]+"
         }
       }
     },
@@ -514,14 +715,47 @@
         }
       }
     },
-    "gcode_word": {
+    "gcode_command": {
       "type": "TOKEN",
       "content": {
         "type": "PREC",
-        "value": 1,
+        "value": 3,
         "content": {
           "type": "PATTERN",
-          "value": "[A-Z][A-Z0-9_]*|[0-9]+(\\.[0-9]+)?"
+          "value": "[GM][0-9]+(\\.[0-9]+)?|[A-Z][A-Z0-9_]*[A-Z_][A-Z0-9_]*"
+        }
+      }
+    },
+    "gcode_parameter": {
+      "type": "TOKEN",
+      "content": {
+        "type": "PREC",
+        "value": 2,
+        "content": {
+          "type": "PATTERN",
+          "value": "[A-Z][0-9]*\\.?[0-9]*"
+        }
+      }
+    },
+    "gcode_number": {
+      "type": "TOKEN",
+      "content": {
+        "type": "PREC",
+        "value": 2,
+        "content": {
+          "type": "PATTERN",
+          "value": "[0-9]+(\\.[0-9]+)?"
+        }
+      }
+    },
+    "gcode_string": {
+      "type": "TOKEN",
+      "content": {
+        "type": "PREC",
+        "value": 2,
+        "content": {
+          "type": "PATTERN",
+          "value": "\"[^\"\\n]*\"|'[^'\\n]*'"
         }
       }
     },
@@ -532,7 +766,7 @@
         "value": 1,
         "content": {
           "type": "PATTERN",
-          "value": "[ \\t]+|[^A-Z{#;%\\s\\n][^A-Z\\n]*"
+          "value": "[ \\t]+|[^A-Z{#;%\\s\\n0-9\"'][^A-Z0-9\\n\"']*|\\{[ \\t][^}\\n]*\\}"
         }
       }
     },

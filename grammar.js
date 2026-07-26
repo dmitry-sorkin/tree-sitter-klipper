@@ -41,167 +41,247 @@
 // @ts-check
 
 module.exports = grammar({
-  name: "klipper",
+	name: "klipper",
 
-  rules: {
-// Top-level: a file is a sequence of either sections or comments.
-// Settings are only valid inside a section.
-source_file: $ => repeat(choice($.section, $.comment)),
+	rules: {
+		// Top-level: a file is a sequence of either sections or comments.
+		// Settings are only valid inside a section.
+		source_file: ($) => repeat(choice($.section, $.comment)),
 
-    // -------------------------------------------------------------------------
-    // Sections
-    // -------------------------------------------------------------------------
-    section: $ => prec.left(seq(
-      '[',
-      field('name', $.section_name),
-      ']',
-      repeat($.section_item),
-    )),
+		// -------------------------------------------------------------------------
+		// Sections
+		// -------------------------------------------------------------------------
+		section: ($) =>
+			prec.left(
+				seq("[", field("name", $.section_name), "]", repeat($.section_item)),
+			),
 
-    // `extruder` / `heater_bed nozzle` / `gcode_macro MY_STARTUP` / `include extras/*.cfg`
-    section_name: $ => /[A-Za-z0-9_ \-./]+/,
+		// `extruder` / `heater_bed nozzle` / `gcode_macro MY_STARTUP` / `include extras/*.cfg`
+		section_name: ($) => /[A-Za-z0-9_ \-./]+/,
 
-    // Within a section, the only legal items are settings and
-    // comments. We use `seq(repeat(setting_or_comment))` so the
-    // parser does not have to choose between a single setting
-    // and a single comment at each position.
-    section_item: $ => choice(
-      // `gcode:` blocks are tried first via prec.dynamic(1) so the
-      // multi-line body wins against the plain `setting` rule when
-      // the key is `gcode`.
-      prec.dynamic(1, $.gcode_block),
-      $.setting,
-      // In-section comments appear as `comment` in the AST via the
-      // alias trick: tree-sitter sees the rule literally distinct
-      // from top-level `comment` so the in-section form wins.
-      alias($.line_comment, $.comment),
-      $.save_config_line,
-    ),
+		// Within a section, the only legal items are settings and
+		// comments. We use `seq(repeat(setting_or_comment))` so the
+		// parser does not have to choose between a single setting
+		// and a single comment at each position.
+		section_item: ($) =>
+			choice(
+				// `gcode:` blocks are tried first via prec.dynamic(1) so the
+				// multi-line body wins against the plain `setting` rule when
+				// the key is `gcode`.
+				prec.dynamic(1, $.gcode_block),
+				$.setting,
+				// In-section comments appear as `comment` in the AST via the
+				// alias trick: tree-sitter sees the rule literally distinct
+				// from top-level `comment` so the in-section form wins.
+				alias($.line_comment, $.comment),
+				$.save_config_line,
+			),
 
-    // -------------------------------------------------------------------------
-    // Settings
-    // -------------------------------------------------------------------------
-    // A `key: value` line has the same shape as `key = value`, with `=`
-    // or `:` as the separator.
-    setting: $ => seq(
-      field('key', $.setting_key),
-      optional(/[ \t]+/),
-      field('separator', $.setting_separator),
-      field('value', $.value_text),
-    ),
+		// -------------------------------------------------------------------------
+		// Settings
+		// -------------------------------------------------------------------------
+		// A `key: value` line has the same shape as `key = value`, with `=`
+		// or `:` as the separator.
+		setting: ($) =>
+			seq(
+				field("key", $.setting_key),
+				optional(/[ \t]+/),
+				field("separator", $.setting_separator),
+				field("value", $.value_text),
+			),
 
-    setting_key: $ => /[A-Za-z_][A-Za-z0-9_.-]*/,
-    setting_separator: $ => /[=:]/,
+		setting_key: ($) => /[A-Za-z_][A-Za-z0-9_.-]*/,
+		setting_separator: ($) => /[=:]/,
 
-    // Value: any non-empty run of non-newline characters. This
-    // includes `#`/`;` (so `host: mqtt://broker#1883` and
-    // `key: value # comment` both produce a single value token).
-    // tree-sitter cannot distinguish inline comments from `#nospace`
-    // value without an external scanner; see the implementation
-    // note at the top.
-    value_text: $ => /[^\n\r]+/,
+		// Value: any non-empty run of non-newline characters. This
+		// includes `#`/`;` (so `host: mqtt://broker#1883` and
+		// `key: value # comment` both produce a single value token).
+		// tree-sitter cannot distinguish inline comments from `#nospace`
+		// value without an external scanner; see the implementation
+		// note at the top.
+		value_text: ($) => /[^\n\r]+/,
 
-    // -------------------------------------------------------------------------
-    // gcode: blocks
-    // -------------------------------------------------------------------------
-    // A `gcode:` setting is structurally different: the key is a literal
-    // `gcode` and the body is zero or more indented continuation lines
-    // that mix Jinja, G-code, and `#`/`;` line comments. The grammar is
-    // deliberately forgiving: anything that doesn't fit a specific token
-    // becomes `gcode_text`, so unknown Klipper commands never cause
-    // parse errors.
-    //
-    // ponytail: the regex fallback (`gcode_text` is restricted so it
-    // cannot outbid `gcode_word`) is the cheapest way to make the lexer
-    // pick the right token; an external scanner would be more correct
-    // but is overkill for a configuration grammar.
-    gcode_block: $ => seq(
-      'gcode',
-      field('separator', $.setting_separator),
-      // Optional first-line value (e.g. `gcode: M104 S0`).
-      field('first_line', optional(seq(
-        token.immediate(/[ \t]+/),
-        $.gcode_line_content,
-      ))),
-      // Zero or more indented continuation lines (real or blank).
-      repeat($.gcode_line),
-    ),
+		// -------------------------------------------------------------------------
+		// gcode: blocks
+		// -------------------------------------------------------------------------
+		// A `gcode:` setting is structurally different: the key is one of
+		// `gcode`, `activate_gcode`, `deactivate_gcode`, `start_gcode`,
+		// `end_gcode` and the body is zero or more indented continuation
+		// lines that mix Jinja, G-code, and `#`/`;` line comments. The
+		// grammar is deliberately forgiving: anything that doesn't fit a
+		// specific token becomes `gcode_text`, so unknown Klipper commands
+		// never cause parse errors.
+		//
+		// ponytail: the regex fallback (`gcode_text` is restricted so it
+		// cannot outbid `gcode_word`) is the cheapest way to make the lexer
+		// pick the right token; an external scanner would be more correct
+		// but is overkill for a configuration grammar.
+		// ponytail: `token(prec(1, /.../))` ensures the gcode key outranks
+		// the broader `setting_key` regex so the multi-line body wins.
+		gcode_block: ($) =>
+			seq(
+				token(prec(1, /[a-z_]*gcode/)),
+				field("separator", $.setting_separator),
+				// Optional first-line value (e.g. `gcode: M104 S0`).
+				field(
+					"first_line",
+					optional(seq(token.immediate(/[ \t]+/), $.gcode_line_content)),
+				),
+				// Zero or more indented continuation lines (real or blank).
+				repeat($.gcode_line),
+			),
 
-// One indented continuation line. Newline + leading whitespace + content.
-// `token(prec(1, /\n[ \t]+/))` ensures the newline is consumed by this
-// rule rather than being silently skipped by the `\s` extras pattern.
-gcode_line: $ => seq(
-  token(prec(1, /\n[ \t]+/)),
-  optional($.gcode_line_content),
-),
+		// One indented continuation line. Newline + leading whitespace + content.
+		// `token(prec(1, /\n[ \t]+/))` ensures the newline is consumed by this
+		// rule rather than being silently skipped by the `\s` extras pattern.
+		gcode_line: ($) =>
+			seq(token(prec(1, /\n[ \t]+/)), optional($.gcode_line_content)),
 
-    // A line's content is a flat sequence of tokens. Specific tokens
-    // (Jinja, line comments) win via precedence; the rest falls back
-    // to `gcode_text` so unknown identifiers never break the parse.
-    gcode_line_content: $ => seq(
-      choice(
-        alias(token.immediate(prec(2, /\{%[^}%]*%\}/)), $.jinja_tag),
-        alias(token.immediate(prec(2, /\{\{[^}]*\}\}/)), $.jinja_expression),
-        alias(token.immediate(prec(2, /\{#[\s\S]*?#\}/)), $.jinja_comment),
-        alias(token.immediate(prec(2, /\{action_[a-z_]+\([^}]*\)\}/)), $.klipper_action),
-        alias(token.immediate(prec(3, /[#;][^\n]*/)), $.gcode_line_comment),
-        // gcode_word prec 2 so it outbids gcode_text on length ties
-        // (e.g. `=1.0` vs `1.0`); otherwise the greedy text fallback
-        // eats the numeric value. Quoted strings are included so
-        // RESPOND MSG="hello" parses as word + text + word + text + word.
-        alias(token.immediate(prec(3, /[A-Z][A-Z0-9_]*|[0-9]+(\.[0-9]+)?|"[^"\n]*"/)), $.gcode_word),
-        alias(token.immediate(prec(1, /[ \t]+|[^A-Z{#;%\s\n0-9][^A-Z0-9\n]*/)), $.gcode_text),
-      ),
-      repeat(choice(
-        alias(token.immediate(prec(2, /\{%[^}%]*%\}/)), $.jinja_tag),
-        alias(token.immediate(prec(2, /\{\{[^}]*\}\}/)), $.jinja_expression),
-        alias(token.immediate(prec(2, /\{#[\s\S]*?#\}/)), $.jinja_comment),
-        alias(token.immediate(prec(2, /\{action_[a-z_]+\([^}]*\)\}/)), $.klipper_action),
-        alias(token.immediate(prec(3, /[#;][^\n]*/)), $.gcode_line_comment),
-        alias(token.immediate(prec(3, /[A-Z][A-Z0-9_]*|[0-9]+(\.[0-9]+)?|"[^"\n]*"/)), $.gcode_word),
-        alias(token.immediate(prec(1, /[ \t]+|[^A-Z{#;%\s\n0-9][^A-Z0-9\n]*/)), $.gcode_text),
-      )),
-    ),
+		// A line's content is a flat sequence of tokens. Specific tokens
+		// (Jinja, line comments) win via precedence; the rest falls back
+		// to `gcode_text` so unknown identifiers never break the parse.
+		gcode_line_content: ($) =>
+			seq(
+				choice(
+					$.jinja_tag,
+					$.jinja_expression,
+					$.jinja_comment,
+					$.klipper_action,
+					alias(token.immediate(prec(3, /[#;][^\n]*/)), $.gcode_line_comment),
+					alias(
+						token.immediate(
+							prec(3, /[GM][0-9]+(\.[0-9]+)?|[A-Z][A-Z0-9_]*[A-Z_][A-Z0-9_]*/),
+						),
+						$.gcode_command,
+					),
+					alias(
+						token.immediate(prec(2, /[A-Z][0-9]*\.?[0-9]*/)),
+						$.gcode_parameter,
+					),
+					alias(
+						token.immediate(prec(2, /[0-9]+(\.[0-9]+)?/)),
+						$.gcode_number,
+					),
+					alias(token.immediate(prec(2, /"[^"\n]*"|'[^'\n]*'/)), $.gcode_string),
+					alias(
+						token.immediate(
+							prec(1, /[ \t]+|[^A-Z{#;%\s\n0-9"'][^A-Z0-9\n"']*|\{[ \t][^}\n]*\}/),
+						),
+						$.gcode_text,
+					),
+				),
+				repeat(
+					choice(
+						$.jinja_tag,
+						$.jinja_expression,
+						$.jinja_comment,
+						$.klipper_action,
+						alias(token.immediate(prec(3, /[#;][^\n]*/)), $.gcode_line_comment),
+						alias(
+							token.immediate(
+								prec(3, /[GM][0-9]+(\.[0-9]+)?|[A-Z][A-Z0-9_]*[A-Z_][A-Z0-9_]*/),
+							),
+							$.gcode_command,
+						),
+						alias(
+							token.immediate(prec(2, /[A-Z][0-9]*\.?[0-9]*/)),
+							$.gcode_parameter,
+						),
+						alias(
+							token.immediate(prec(2, /[0-9]+(\.[0-9]+)?/)),
+							$.gcode_number,
+						),
+						alias(
+							token.immediate(prec(2, /"[^"\n]*"|'[^'\n]*'/)),
+							$.gcode_string,
+						),
+						alias(
+							token.immediate(
+								prec(1, /[ \t]+|[^A-Z{#;%\s\n0-9"'][^A-Z0-9\n"']*|\{[ \t][^}\n]*\}/),
+							),
+							$.gcode_text,
+						),
+					),
+				),
+			),
 
-    // Jinja constructs. prec(2) so they beat `gcode_word` / `gcode_text`
-    // when the strings overlap (e.g. `{{foo}}` vs an identifier fallback).
-    jinja_tag: $ => token(prec(2, /\{%[^}%]*%\}/)),
-    jinja_expression: $ => token(prec(2, /\{\{[^}]*\}\}/)),
-    jinja_comment: $ => token(prec(2, /\{#[\s\S]*?#\}/)),
-    // Klipper inline action calls: `{action_raise_error("...")}`,
-    // `{action_respond_info('...')}`. These are not Jinja but
-    // use the same single-brace syntax; treat them as Jinja so
-    // they don't crash the parser on real configs.
-    klipper_action: $ => token(prec(2, /\{action_[a-z_]+\([^}]*\)\}/)),
+		// Jinja constructs. Structural nodes expose their contents for
+		// fine-grained highlighting.
+		jinja_tag: ($) =>
+			seq(token.immediate("{%"), optional($.jinja_content), token(prec(2, "%}"))),
+		jinja_expression: ($) => seq(token.immediate("{{"), optional($.jinja_content), "}}"),
+		jinja_content: ($) =>
+			repeat1(
+				choice(
+					$.jinja_keyword,
+					$.jinja_string,
+					$.jinja_number,
+					$.jinja_operator,
+					$.jinja_variable,
+				),
+			),
+		jinja_keyword: ($) =>
+			token(
+				prec(
+					3,
+					/((?:if|elif|else|endif|for|endfor|in|set|not|and|or|is|none|None|true|True|false|False|range))/,
+				),
+			),
+		jinja_string: ($) => token(prec(2, /'[^'\n]*'|"[^"\n]*"/)),
+		jinja_number: ($) => token(prec(2, /[0-9]+(\.[0-9]+)?/)),
+		jinja_operator: ($) => token(prec(1, /[|()\x5b\x5d.,:=+*<>!%_-]+/)),
+		jinja_variable: ($) => token(prec(1, /[A-Za-z_][A-Za-z0-9_]*/)),
+		jinja_comment: ($) => token.immediate(prec(2, /\{#[\s\S]*?#\}/)),
+		// Klipper inline action calls: `{action_raise_error("...")}`,
+		// `{action_respond_info('...')}`. Expose the action name and args
+		// so strings can be highlighted independently.
+		klipper_action: ($) =>
+			seq(
+				token.immediate("{"),
+				field("name", $.klipper_action_name),
+				token(prec(2, "(")),
+				repeat(
+					choice(
+						$.jinja_string,
+						$.jinja_number,
+						$.jinja_variable,
+						$.jinja_operator,
+					),
+				),
+				token(prec(2, ")")),
+				"}",
+			),
+		klipper_action_name: ($) => token(prec(3, /action_[a-z_]+/)),
 
-    gcode_line_comment: $ => token(prec(3, /[#;][^\n]*/)),
+		gcode_line_comment: ($) => token(prec(3, /[#;][^\n]*/)),
 
-    // G-code command or parameter identifier, including numeric values.
-    gcode_word: $ => token(prec(1, /[A-Z][A-Z0-9_]*|[0-9]+(\.[0-9]+)?/)),
+		gcode_command: ($) =>
+			token(prec(3, /[GM][0-9]+(\.[0-9]+)?|[A-Z][A-Z0-9_]*[A-Z_][A-Z0-9_]*/)),
+		gcode_parameter: ($) => token(prec(2, /[A-Z][0-9]*\.?[0-9]*/)),
+		gcode_number: ($) => token(prec(2, /[0-9]+(\.[0-9]+)?/)),
+		gcode_string: ($) => token(prec(2, /"[^"\n]*"|'[^'\n]*'/)),
 
-    // Fallback for anything that isn't a token above.
-    gcode_text: $ => token(prec(1, /[ \t]+|[^A-Z{#;%\s\n][^A-Z\n]*/)),
+		// Fallback for anything that isn't a token above.
+		gcode_text: ($) =>
+			token(prec(1, /[ \t]+|[^A-Z{#;%\s\n0-9"'][^A-Z0-9\n"']*|\{[ \t][^}\n]*\}/)),
 
-    // -------------------------------------------------------------------------
-    // Comments
-    // -------------------------------------------------------------------------
-    // Full-line comments start at column 0 (or after only whitespace) with
-    // `#` or `;`. SAVE_CONFIG lines are a series of `#*#`-prefixed lines
-    // captured as a single node with a distinct type so the highlights
-    // query can colour it differently.
-    comment: $ => choice(
-      $.save_config_line,
-      $.line_comment,
-    ),
+		// -------------------------------------------------------------------------
+		// Comments
+		// -------------------------------------------------------------------------
+		// Full-line comments start at column 0 (or after only whitespace) with
+		// `#` or `;`. SAVE_CONFIG lines are a series of `#*#`-prefixed lines
+		// captured as a single node with a distinct type so the highlights
+		// query can colour it differently.
+		comment: ($) => choice($.save_config_line, $.line_comment),
 
-    // Wrap as a token so the parser, not the lexer, picks when to
-    // start a comment: this lets `; semi` inside a section become a
-    // `section_item` rather than a top-level `comment` that closes
-    // the section prematurely (regression on klipper_main #18).
-    line_comment: $ => token(/[#;][^\n]*/),
+		// Wrap as a token so the parser, not the lexer, picks when to
+		// start a comment: this lets `; semi` inside a section become a
+		// `section_item` rather than a top-level `comment` that closes
+		// the section prematurely (regression on klipper_main #18).
+		line_comment: ($) => token(/[#;][^\n]*/),
 
-    // SAVE_CONFIG block: `prec(1)` so that `#*# ...` is preferred
-    // over `# ...` when both regexes match.
-    save_config_line: $ => token(prec(1, /#\*#[^\n]*/)),
-  },
+		// SAVE_CONFIG block: `prec(1)` so that `#*# ...` is preferred
+		// over `# ...` when both regexes match.
+		save_config_line: ($) => token(prec(1, /#\*#[^\n]*/)),
+	},
 });
