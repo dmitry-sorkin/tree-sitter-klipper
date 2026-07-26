@@ -1,7 +1,7 @@
 {
   "name": "tree-sitter-klipper",
-  "version": "0.1.0",
-  "description": "Klipper grammar for tree-sitter",
+  "version": "1.0.0",
+  "description": "Klipper 3D-printer config file grammar",
   "repository": "https://github.com/dsorkin/tree-sitter-klipper",
   "license": "GPL-3.0",
   "author": {
