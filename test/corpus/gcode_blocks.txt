@@ -370,11 +370,9 @@ gcode:
               (jinja_content
                 (jinja_variable)
                 (jinja_operator)
-                (jinja_builtin)
                 (jinja_variable)))
             (jinja_expression
               (jinja_content
-                (jinja_keyword)
                 (jinja_variable)
                 (jinja_operator)
                 (jinja_variable)))

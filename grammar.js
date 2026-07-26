@@ -292,14 +292,14 @@ module.exports = grammar({
 		jinja_keyword: ($) =>
 			token(
 				prec(
-					3,
+					1,
 					/(if|elif|else|endif|for|endfor|set|not|and|or|is|true|True|false|False)/,
 				),
 			),
 		jinja_builtin: ($) =>
 			token(
 				prec(
-					2,
+					1,
 					/(default|int|float|string|list|dict|abs|max|min|sum|length|count|sort|reverse|map|join|upper|lower|capitalize|title|replace|trim|truncate|striptags|escape|safe|forceescape|attr|batch|groupby|select|reject|selectattr|rejectattr|items|pprint|urlencode|wordcount|wordwrap|filesizeformat|indent|center|first|last|slice|random|in|none|None|range|defined|undefined|even|odd|divisibleby|iterable|mapping|number|sequence|callable|test|sameas)/,
 				),
 			),
