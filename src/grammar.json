@@ -204,27 +204,39 @@
       "value": "[=:]"
     },
     "value_text": {
-      "type": "CHOICE",
+      "type": "SEQ",
       "members": [
         {
-          "type": "IMMEDIATE_TOKEN",
-          "content": {
-            "type": "PATTERN",
-            "value": "[^\\n\\r \\t]+"
-          }
+          "type": "SYMBOL",
+          "name": "value_part_two"
         },
         {
-          "type": "IMMEDIATE_TOKEN",
+          "type": "REPEAT",
           "content": {
-            "type": "PREC",
-            "value": 1,
+            "type": "ALIAS",
             "content": {
-              "type": "PATTERN",
-              "value": "[^\\n\\r]+"
-            }
+              "type": "IMMEDIATE_TOKEN",
+              "content": {
+                "type": "PATTERN",
+                "value": "[ \\t]+[^\\n\\r \\t]+"
+              }
+            },
+            "named": true,
+            "value": "value_part_two"
           }
         }
       ]
+    },
+    "value_part_two": {
+      "type": "IMMEDIATE_TOKEN",
+      "content": {
+        "type": "PREC",
+        "value": 2,
+        "content": {
+          "type": "PATTERN",
+          "value": "[^\\n\\r \\t]+"
+        }
+      }
     },
     "inline_comment": {
       "type": "TOKEN",

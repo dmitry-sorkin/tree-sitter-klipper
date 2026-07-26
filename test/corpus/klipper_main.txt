@@ -14,7 +14,8 @@ kinematics: corexy
       (setting
         key: (setting_key)
         separator: (setting_separator)
-        value: (value_text)))))
+        value: (value_text
+          (value_part_two))))))
 
 ================================================================================
 section name with space and argument
@@ -45,7 +46,8 @@ max_velocity = 300
       (setting
         key: (setting_key)
         separator: (setting_separator)
-        value: (value_text)))))
+        value: (value_text
+          (value_part_two))))))
 
 ================================================================================
 key with : separator
@@ -63,7 +65,8 @@ kinematics: cartesian
       (setting
         key: (setting_key)
         separator: (setting_separator)
-        value: (value_text)))))
+        value: (value_text
+          (value_part_two))))))
 
 ================================================================================
 key with value containing url
@@ -81,7 +84,8 @@ host: mqtt://broker:1883/topic
       (setting
         key: (setting_key)
         separator: (setting_separator)
-        value: (value_text)))))
+        value: (value_text
+          (value_part_two))))))
 
 ================================================================================
 inline comment is part of value
@@ -99,7 +103,9 @@ kinematics: corexy  # cartesian
       (setting
         key: (setting_key)
         separator: (setting_separator)
-        value: (value_text)))))
+        value: (value_text
+          (value_part_two))
+        inline_comment: (inline_comment)))))
 
 ================================================================================
 hash with no preceding space is part of value
@@ -117,7 +123,8 @@ host: mqtt://broker#1883
       (setting
         key: (setting_key)
         separator: (setting_separator)
-        value: (value_text)))))
+        value: (value_text
+          (value_part_two))))))
 
 ================================================================================
 full-line comment with hash
@@ -138,7 +145,8 @@ kinematics: corexy
       (setting
         key: (setting_key)
         separator: (setting_separator)
-        value: (value_text)))))
+        value: (value_text
+          (value_part_two))))))
 
 ================================================================================
 full-line comment with semicolon
@@ -159,7 +167,8 @@ kinematics: corexy
       (setting
         key: (setting_key)
         separator: (setting_separator)
-        value: (value_text)))))
+        value: (value_text
+          (value_part_two))))))
 
 ================================================================================
 SAVE_CONFIG block
@@ -182,7 +191,8 @@ position_endstop: 224.000
       (setting
         key: (setting_key)
         separator: (setting_separator)
-        value: (value_text))))
+        value: (value_text
+          (value_part_two)))))
   (comment
     (save_config_line))
   (comment
@@ -211,7 +221,8 @@ kinematics: corexy
       (setting
         key: (setting_key)
         separator: (setting_separator)
-        value: (value_text)))))
+        value: (value_text
+          (value_part_two))))))
 
 ================================================================================
 value with negation prefix
@@ -229,7 +240,8 @@ dir_pin: !PE3
       (setting
         key: (setting_key)
         separator: (setting_separator)
-        value: (value_text)))))
+        value: (value_text
+          (value_part_two))))))
 
 ================================================================================
 value with virtual pin
@@ -247,7 +259,8 @@ endstop_pin: tmc2209_stepper_x:virtual_endstop
       (setting
         key: (setting_key)
         separator: (setting_separator)
-        value: (value_text)))))
+        value: (value_text
+          (value_part_two))))))
 
 ================================================================================
 section with type and name
@@ -291,9 +304,13 @@ target: !PIN # inverted pin
       (setting
         key: (setting_key)
         separator: (setting_separator)
-        value: (value_text)))
+        value: (value_text
+          (value_part_two))
+        inline_comment: (inline_comment)))
     (section_item
       (setting
         key: (setting_key)
         separator: (setting_separator)
-        value: (value_text)))))
+        value: (value_text
+          (value_part_two))
+        inline_comment: (inline_comment)))))

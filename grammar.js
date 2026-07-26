@@ -109,20 +109,36 @@ module.exports = grammar({
 		setting_key: ($) => /[a-z_][A-Za-z0-9_.-]*/,
 		setting_separator: ($) => /[=:]/,
 
-		// Value: a non-empty run of non-newline, non-whitespace characters,
-		// OR a multi-value run that extends to end-of-line (e.g.
-		// `heater: extruder, extruder1, heater_bed`). tree-sitter regex
-		// has no lookahead, so the trailing-comment-vs-multi-value
-		// distinction is a `choice`: the second alternative matches the
-		// greedy whole-line case. `#`/`;` are kept in the value (matching
-		// the configparser rule that `#` is a comment only when preceded
-		// by whitespace), so `host: mqtt://broker#1883` and
-		// `key: 0#nospace` stay as single values.
+		// Value: a single non-whitespace token (used for the first
+		// value) followed by zero or more continuation tokens, each
+		// of which is whitespace + a non-whitespace run. The whole
+		// sequence is the value. After all the value tokens, an
+		// optional inline_comment sibling sits as a child of
+		// `setting`. The previous `value_text` was a `choice` token
+		// that always absorbed the trailing comment because the
+		// lexer's longest-match rule preferred `[^\n\r]+` over
+		// `[^\n\r \t]+`; this rule-based structure lets the parser
+		// stop at the first whitespace and surface the comment.
+		// `#`/`;` are kept inside the value token (configparser rule:
+		// `#` is a comment only when preceded by whitespace), so
+		// `host: mqtt://broker#1883` stays as a single value.
 		value_text: ($) =>
-			choice(
-				token.immediate(/[^\n\r \t]+/),
-				token.immediate(prec(1, /[^\n\r]+/)),
+			seq(
+				$.value_part_two,
+				repeat(
+					alias(
+						token.immediate(/[ \t]+[^\n\r \t]+/),
+						$.value_part_two,
+					),
+				),
 			),
+
+		// A single value token: non-empty run of characters that
+		// are not newline, CR, space, or tab. Continuation tokens
+		// include their leading whitespace so a single
+		// token.immediate regex can land at the current position
+		// without a separate whitespace token.
+		value_part_two: ($) => token.immediate(prec(2, /[^\n\r \t]+/)),
 
 		// Inline trailing comment: required leading whitespace + `#` or `;`.
 		inline_comment: ($) => token(/[ \t]+[#;][^\n\r]*/),

@@ -397,7 +397,17 @@
   {
     "type": "value_text",
     "named": true,
-    "fields": {}
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "value_part_two",
+          "named": true
+        }
+      ]
+    }
   },
   {
     "type": "%}",
@@ -517,6 +527,10 @@
   },
   {
     "type": "setting_separator",
+    "named": true
+  },
+  {
+    "type": "value_part_two",
     "named": true
   },
   {
