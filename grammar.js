@@ -56,7 +56,9 @@ module.exports = grammar({
 				seq(
 					"[",
 					field("type", $.section_type),
-					optional(seq(token.immediate(/[ \t]+/), field("name", $.section_name))),
+					optional(
+						seq(token.immediate(/[ \t]+/), field("name", $.section_name)),
+					),
 					"]",
 					repeat($.section_item),
 				),
@@ -81,7 +83,11 @@ module.exports = grammar({
 				// In-section comments appear as `comment` in the AST via the
 				// alias trick: tree-sitter sees the rule literally distinct
 				// from top-level `comment` so the in-section form wins.
-				alias($.line_comment, $.comment),
+				// prec.dynamic(1) keeps the section open so a `#nospace`
+				// leftover after a value (e.g. `key: 0#nospace`) is consumed
+				// as a section_item rather than closing the section into a
+				// top-level comment.
+				prec.dynamic(1, alias($.line_comment, $.comment)),
 				$.save_config_line,
 			),
 
@@ -95,19 +101,25 @@ module.exports = grammar({
 				field("key", $.setting_key),
 				optional(/[ \t]+/),
 				field("separator", $.setting_separator),
+				token.immediate(/[ \t]+/),
 				field("value", $.value_text),
+				optional(field("inline_comment", $.inline_comment)),
 			),
 
 		setting_key: ($) => /[A-Za-z_][A-Za-z0-9_.-]*/,
 		setting_separator: ($) => /[=:]/,
 
-		// Value: any non-empty run of non-newline characters. This
-		// includes `#`/`;` (so `host: mqtt://broker#1883` and
-		// `key: value # comment` both produce a single value token).
-		// tree-sitter cannot distinguish inline comments from `#nospace`
-		// value without an external scanner; see the implementation
-		// note at the top.
-		value_text: ($) => /[^\n\r]+/,
+		// Value: any non-empty run of non-newline, non-whitespace characters.
+		// Stops at whitespace so `inline_comment` can capture the trailing
+		// ` # ...` separately. `#`/`;` are kept in the value (matching the
+		// configparser rule that `#` is a comment only when preceded by
+		// whitespace), so `host: mqtt://broker#1883` and
+		// `key: 0#nospace` stay as single values.
+		value_text: ($) => token.immediate(/[^\n\r \t]+/),
+
+		// Inline trailing comment: required leading whitespace + `#` or `;`.
+		inline_comment: ($) => token(/[ \t]+[#;][^\n\r]*/),
+
 
 		// -------------------------------------------------------------------------
 		// gcode: blocks

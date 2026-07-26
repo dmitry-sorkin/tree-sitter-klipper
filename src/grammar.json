@@ -105,13 +105,17 @@
           "name": "setting"
         },
         {
-          "type": "ALIAS",
+          "type": "PREC_DYNAMIC",
+          "value": 1,
           "content": {
-            "type": "SYMBOL",
-            "name": "line_comment"
-          },
-          "named": true,
-          "value": "comment"
+            "type": "ALIAS",
+            "content": {
+              "type": "SYMBOL",
+              "name": "line_comment"
+            },
+            "named": true,
+            "value": "comment"
+          }
         },
         {
           "type": "SYMBOL",
@@ -151,12 +155,35 @@
           }
         },
         {
+          "type": "IMMEDIATE_TOKEN",
+          "content": {
+            "type": "PATTERN",
+            "value": "[ \\t]+"
+          }
+        },
+        {
           "type": "FIELD",
           "name": "value",
           "content": {
             "type": "SYMBOL",
             "name": "value_text"
           }
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "FIELD",
+              "name": "inline_comment",
+              "content": {
+                "type": "SYMBOL",
+                "name": "inline_comment"
+              }
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
         }
       ]
     },
@@ -169,8 +196,18 @@
       "value": "[=:]"
     },
     "value_text": {
-      "type": "PATTERN",
-      "value": "[^\\n\\r]+"
+      "type": "IMMEDIATE_TOKEN",
+      "content": {
+        "type": "PATTERN",
+        "value": "[^\\n\\r \\t]+"
+      }
+    },
+    "inline_comment": {
+      "type": "TOKEN",
+      "content": {
+        "type": "PATTERN",
+        "value": "[ \\t]+[#;][^\\n\\r]*"
+      }
     },
     "gcode_block": {
       "type": "SEQ",

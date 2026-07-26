@@ -99,7 +99,8 @@ kinematics: corexy  # cartesian
       (setting
         key: (setting_key)
         separator: (setting_separator)
-        value: (value_text)))))
+        value: (value_text)
+        inline_comment: (inline_comment)))))
 
 ================================================================================
 hash with no preceding space is part of value
@@ -273,3 +274,29 @@ section with type only
 (source_file
   (section
     type: (section_type)))
+
+================================================================================
+inline trailing comment after value
+================================================================================
+
+[printer]
+kinematics: corexy # cartesian
+target: !PIN # inverted pin
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (section
+    type: (section_type)
+    (section_item
+      (setting
+        key: (setting_key)
+        separator: (setting_separator)
+        value: (value_text)
+        inline_comment: (inline_comment)))
+    (section_item
+      (setting
+        key: (setting_key)
+        separator: (setting_separator)
+        value: (value_text)
+        inline_comment: (inline_comment)))))

@@ -343,6 +343,16 @@
     "type": "setting",
     "named": true,
     "fields": {
+      "inline_comment": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "inline_comment",
+            "named": true
+          }
+        ]
+      },
       "key": {
         "multiple": false,
         "required": true,
@@ -441,6 +451,10 @@
   },
   {
     "type": "gcode_text",
+    "named": true
+  },
+  {
+    "type": "inline_comment",
     "named": true
   },
   {
