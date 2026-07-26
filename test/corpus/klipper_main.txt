@@ -9,7 +9,7 @@ kinematics: corexy
 
 (source_file
   (section
-    name: (section_name)
+    type: (section_type)
     (section_item
       (setting
         key: (setting_key)
@@ -26,6 +26,7 @@ section name with space and argument
 
 (source_file
   (section
+    type: (section_type)
     name: (section_name)))
 
 ================================================================================
@@ -39,7 +40,7 @@ max_velocity = 300
 
 (source_file
   (section
-    name: (section_name)
+    type: (section_type)
     (section_item
       (setting
         key: (setting_key)
@@ -57,7 +58,7 @@ kinematics: cartesian
 
 (source_file
   (section
-    name: (section_name)
+    type: (section_type)
     (section_item
       (setting
         key: (setting_key)
@@ -75,7 +76,7 @@ host: mqtt://broker:1883/topic
 
 (source_file
   (section
-    name: (section_name)
+    type: (section_type)
     (section_item
       (setting
         key: (setting_key)
@@ -93,7 +94,7 @@ kinematics: corexy  # cartesian
 
 (source_file
   (section
-    name: (section_name)
+    type: (section_type)
     (section_item
       (setting
         key: (setting_key)
@@ -111,7 +112,7 @@ host: mqtt://broker#1883
 
 (source_file
   (section
-    name: (section_name)
+    type: (section_type)
     (section_item
       (setting
         key: (setting_key)
@@ -132,7 +133,7 @@ kinematics: corexy
   (comment
     (line_comment))
   (section
-    name: (section_name)
+    type: (section_type)
     (section_item
       (setting
         key: (setting_key)
@@ -153,7 +154,7 @@ kinematics: corexy
   (comment
     (line_comment))
   (section
-    name: (section_name)
+    type: (section_type)
     (section_item
       (setting
         key: (setting_key)
@@ -176,7 +177,7 @@ position_endstop: 224.000
 
 (source_file
   (section
-    name: (section_name)
+    type: (section_type)
     (section_item
       (setting
         key: (setting_key)
@@ -203,9 +204,9 @@ kinematics: corexy
 
 (source_file
   (section
-    name: (section_name))
+    type: (section_type))
   (section
-    name: (section_name)
+    type: (section_type)
     (section_item
       (setting
         key: (setting_key)
@@ -223,7 +224,7 @@ dir_pin: !PE3
 
 (source_file
   (section
-    name: (section_name)
+    type: (section_type)
     (section_item
       (setting
         key: (setting_key)
@@ -241,9 +242,34 @@ endstop_pin: tmc2209_stepper_x:virtual_endstop
 
 (source_file
   (section
-    name: (section_name)
+    type: (section_type)
     (section_item
       (setting
         key: (setting_key)
         separator: (setting_separator)
         value: (value_text)))))
+
+================================================================================
+section with type and name
+================================================================================
+
+[gcode_macro ENABLE_EQUAL_PA]
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (section
+    type: (section_type)
+    name: (section_name)))
+
+================================================================================
+section with type only
+================================================================================
+
+[printer]
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (section
+    type: (section_type)))

@@ -30,11 +30,39 @@
           },
           {
             "type": "FIELD",
-            "name": "name",
+            "name": "type",
             "content": {
               "type": "SYMBOL",
-              "name": "section_name"
+              "name": "section_type"
             }
+          },
+          {
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "SEQ",
+                "members": [
+                  {
+                    "type": "IMMEDIATE_TOKEN",
+                    "content": {
+                      "type": "PATTERN",
+                      "value": "[ \\t]+"
+                    }
+                  },
+                  {
+                    "type": "FIELD",
+                    "name": "name",
+                    "content": {
+                      "type": "SYMBOL",
+                      "name": "section_name"
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "BLANK"
+              }
+            ]
           },
           {
             "type": "STRING",
@@ -48,6 +76,13 @@
             }
           }
         ]
+      }
+    },
+    "section_type": {
+      "type": "TOKEN",
+      "content": {
+        "type": "PATTERN",
+        "value": "[A-Za-z_][A-Za-z0-9_]*"
       }
     },
     "section_name": {
@@ -275,7 +310,7 @@
                   "type": "IMMEDIATE_TOKEN",
                   "content": {
                     "type": "PREC",
-                    "value": 3,
+                    "value": 20,
                     "content": {
                       "type": "PATTERN",
                       "value": "[GM][0-9]+(\\.[0-9]+)?|[A-Z][A-Z0-9_]*[A-Z_][A-Z0-9_]*"
@@ -292,7 +327,7 @@
                 "type": "IMMEDIATE_TOKEN",
                 "content": {
                   "type": "PREC",
-                  "value": 2,
+                  "value": 10,
                   "content": {
                     "type": "PATTERN",
                     "value": "[A-Z][0-9]*\\.?[0-9]*"
@@ -448,7 +483,7 @@
                   "type": "IMMEDIATE_TOKEN",
                   "content": {
                     "type": "PREC",
-                    "value": 3,
+                    "value": 20,
                     "content": {
                       "type": "PATTERN",
                       "value": "[GM][0-9]+(\\.[0-9]+)?|[A-Z][A-Z0-9_]*[A-Z_][A-Z0-9_]*"
@@ -464,7 +499,7 @@
                   "type": "IMMEDIATE_TOKEN",
                   "content": {
                     "type": "PREC",
-                    "value": 2,
+                    "value": 10,
                     "content": {
                       "type": "PATTERN",
                       "value": "[A-Z][0-9]*\\.?[0-9]*"
@@ -881,7 +916,7 @@
       "type": "TOKEN",
       "content": {
         "type": "PREC",
-        "value": 3,
+        "value": 20,
         "content": {
           "type": "PATTERN",
           "value": "action_[a-z_]+"
@@ -925,7 +960,7 @@
       "type": "TOKEN",
       "content": {
         "type": "PREC",
-        "value": 2,
+        "value": 10,
         "content": {
           "type": "PATTERN",
           "value": "[A-Z][0-9]*\\.?[0-9]*"

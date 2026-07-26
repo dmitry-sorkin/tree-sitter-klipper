@@ -53,8 +53,16 @@ module.exports = grammar({
 		// -------------------------------------------------------------------------
 		section: ($) =>
 			prec.left(
-				seq("[", field("name", $.section_name), "]", repeat($.section_item)),
+				seq(
+					"[",
+					field("type", $.section_type),
+					optional(seq(token.immediate(/[ \t]+/), field("name", $.section_name))),
+					"]",
+					repeat($.section_item),
+				),
 			),
+
+		section_type: ($) => token(/[A-Za-z_][A-Za-z0-9_]*/),
 
 		// `extruder` / `heater_bed nozzle` / `gcode_macro MY_STARTUP` / `include extras/*.cfg`
 		section_name: ($) => /[A-Za-z0-9_ \-./]+/,
@@ -160,7 +168,7 @@ module.exports = grammar({
 						alias(
 							token.immediate(
 								prec(
-									3,
+									20,
 									/[GM][0-9]+(\.[0-9]+)?|[A-Z][A-Z0-9_]*[A-Z_][A-Z0-9_]*/,
 								),
 							),
@@ -168,7 +176,7 @@ module.exports = grammar({
 						),
 					),
 					alias(
-						token.immediate(prec(2, /[A-Z][0-9]*\.?[0-9]*/)),
+						token.immediate(prec(10, /[A-Z][0-9]*\.?[0-9]*/)),
 						$.gcode_parameter,
 					),
 					alias(token.immediate(prec(2, /[0-9]+(\.[0-9]+)?/)), $.gcode_number),
@@ -209,14 +217,14 @@ module.exports = grammar({
 						alias(
 							token.immediate(
 								prec(
-									3,
+									20,
 									/[GM][0-9]+(\.[0-9]+)?|[A-Z][A-Z0-9_]*[A-Z_][A-Z0-9_]*/,
 								),
 							),
 							$.gcode_command,
 						),
 						alias(
-							token.immediate(prec(2, /[A-Z][0-9]*\.?[0-9]*/)),
+							token.immediate(prec(10, /[A-Z][0-9]*\.?[0-9]*/)),
 							$.gcode_parameter,
 						),
 						alias(
@@ -323,7 +331,7 @@ module.exports = grammar({
 				token(prec(2, ")")),
 				"}",
 			),
-		klipper_action_name: ($) => token(prec(3, /action_[a-z_]+/)),
+		klipper_action_name: ($) => token(prec(20, /action_[a-z_]+/)),
 
 		gcode_line_comment: ($) => token(prec(3, /[#;][^\n]*/)),
 
@@ -331,7 +339,7 @@ module.exports = grammar({
 			token(prec(3, /[GM][0-9]+(\.[0-9]+)?|[A-Z][A-Z0-9_]*[A-Z_][A-Z0-9_]*/)),
 		gcode_command: ($) =>
 			token(prec(3, /[GM][0-9]+(\.[0-9]+)?|[A-Z][A-Z0-9_]*[A-Z_][A-Z0-9_]*/)),
-		gcode_parameter: ($) => token(prec(2, /[A-Z][0-9]*\.?[0-9]*/)),
+		gcode_parameter: ($) => token(prec(10, /[A-Z][0-9]*\.?[0-9]*/)),
 		gcode_number: ($) => token(prec(2, /[0-9]+(\.[0-9]+)?/)),
 		gcode_string: ($) => token(prec(2, /"[^"\n]*"|'[^'\n]*'/)),
 		gcode_identifier: ($) => token(prec(2, /[a-z_][a-zA-Z0-9_.]*/)),

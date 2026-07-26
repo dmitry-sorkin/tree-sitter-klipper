@@ -282,10 +282,20 @@
     "fields": {
       "name": {
         "multiple": false,
-        "required": true,
+        "required": false,
         "types": [
           {
             "type": "section_name",
+            "named": true
+          }
+        ]
+      },
+      "type": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "section_type",
             "named": true
           }
         ]
@@ -471,6 +481,10 @@
   },
   {
     "type": "section_name",
+    "named": true
+  },
+  {
+    "type": "section_type",
     "named": true
   },
   {
