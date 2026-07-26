@@ -109,13 +109,20 @@ module.exports = grammar({
 		setting_key: ($) => /[A-Za-z_][A-Za-z0-9_.-]*/,
 		setting_separator: ($) => /[=:]/,
 
-		// Value: any non-empty run of non-newline, non-whitespace characters.
-		// Stops at whitespace so `inline_comment` can capture the trailing
-		// ` # ...` separately. `#`/`;` are kept in the value (matching the
-		// configparser rule that `#` is a comment only when preceded by
-		// whitespace), so `host: mqtt://broker#1883` and
+		// Value: a non-empty run of non-newline, non-whitespace characters,
+		// OR a multi-value run that extends to end-of-line (e.g.
+		// `heater: extruder, extruder1, heater_bed`). tree-sitter regex
+		// has no lookahead, so the trailing-comment-vs-multi-value
+		// distinction is a `choice`: the second alternative matches the
+		// greedy whole-line case. `#`/`;` are kept in the value (matching
+		// the configparser rule that `#` is a comment only when preceded
+		// by whitespace), so `host: mqtt://broker#1883` and
 		// `key: 0#nospace` stay as single values.
-		value_text: ($) => token.immediate(/[^\n\r \t]+/),
+		value_text: ($) =>
+			choice(
+				token.immediate(/[^\n\r \t]+/),
+				token.immediate(prec(1, /[^\n\r]+/)),
+			),
 
 		// Inline trailing comment: required leading whitespace + `#` or `;`.
 		inline_comment: ($) => token(/[ \t]+[#;][^\n\r]*/),
@@ -197,17 +204,7 @@ module.exports = grammar({
 						$.gcode_string,
 					),
 					$.gcode_identifier,
-					seq(
-						token.immediate(prec(3, /=/)),
-						choice(
-							$.gcode_identifier,
-							$.gcode_number,
-							$.gcode_string,
-							$.gcode_command,
-							$.gcode_parameter,
-							$.gcode_text,
-						),
-					),
+					seq(token.immediate(prec(3, /=/)), $.gcode_arg_value),
 					alias(
 						token.immediate(
 							prec(
@@ -248,17 +245,7 @@ module.exports = grammar({
 							$.gcode_string,
 						),
 						$.gcode_identifier,
-						seq(
-							token.immediate(prec(3, /=/)),
-							choice(
-								$.gcode_identifier,
-								$.gcode_number,
-								$.gcode_string,
-								$.gcode_command,
-								$.gcode_parameter,
-								$.gcode_text,
-							),
-						),
+						seq(token.immediate(prec(3, /=/)), $.gcode_arg_value),
 						alias(
 							token.immediate(
 								prec(
@@ -355,6 +342,18 @@ module.exports = grammar({
 		gcode_number: ($) => token(prec(2, /[0-9]+(\.[0-9]+)?/)),
 		gcode_string: ($) => token(prec(2, /"[^"\n]*"|'[^'\n]*'/)),
 		gcode_identifier: ($) => token(prec(2, /[a-z_][a-zA-Z0-9_.]*/)),
+
+		// Value following `NAME=` in a gcode line. Matches uppercase IDs
+		// (PRIMARY, W), lowercase IDs (xc, _id), numbers (1, 1.5), and
+		// quoted strings. prec(5) wins the lexer tiebreak against
+		// gcode_command/gcode_parameter for the character right after `=`.
+		gcode_arg_value: ($) =>
+			token(
+				prec(
+					5,
+					/[A-Za-z_][A-Za-z0-9_.]*|[0-9]+(\.[0-9]+)?|"[^"\n]*"|'[^'\n]*'/,
+				),
+			),
 
 		// Fallback for anything that isn't a token above.
 		gcode_text: ($) =>

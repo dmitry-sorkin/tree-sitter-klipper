@@ -204,11 +204,27 @@
       "value": "[=:]"
     },
     "value_text": {
-      "type": "IMMEDIATE_TOKEN",
-      "content": {
-        "type": "PATTERN",
-        "value": "[^\\n\\r \\t]+"
-      }
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "IMMEDIATE_TOKEN",
+          "content": {
+            "type": "PATTERN",
+            "value": "[^\\n\\r \\t]+"
+          }
+        },
+        {
+          "type": "IMMEDIATE_TOKEN",
+          "content": {
+            "type": "PREC",
+            "value": 1,
+            "content": {
+              "type": "PATTERN",
+              "value": "[^\\n\\r]+"
+            }
+          }
+        }
+      ]
     },
     "inline_comment": {
       "type": "TOKEN",
@@ -433,33 +449,8 @@
                   }
                 },
                 {
-                  "type": "CHOICE",
-                  "members": [
-                    {
-                      "type": "SYMBOL",
-                      "name": "gcode_identifier"
-                    },
-                    {
-                      "type": "SYMBOL",
-                      "name": "gcode_number"
-                    },
-                    {
-                      "type": "SYMBOL",
-                      "name": "gcode_string"
-                    },
-                    {
-                      "type": "SYMBOL",
-                      "name": "gcode_command"
-                    },
-                    {
-                      "type": "SYMBOL",
-                      "name": "gcode_parameter"
-                    },
-                    {
-                      "type": "SYMBOL",
-                      "name": "gcode_text"
-                    }
-                  ]
+                  "type": "SYMBOL",
+                  "name": "gcode_arg_value"
                 }
               ]
             },
@@ -605,33 +596,8 @@
                     }
                   },
                   {
-                    "type": "CHOICE",
-                    "members": [
-                      {
-                        "type": "SYMBOL",
-                        "name": "gcode_identifier"
-                      },
-                      {
-                        "type": "SYMBOL",
-                        "name": "gcode_number"
-                      },
-                      {
-                        "type": "SYMBOL",
-                        "name": "gcode_string"
-                      },
-                      {
-                        "type": "SYMBOL",
-                        "name": "gcode_command"
-                      },
-                      {
-                        "type": "SYMBOL",
-                        "name": "gcode_parameter"
-                      },
-                      {
-                        "type": "SYMBOL",
-                        "name": "gcode_text"
-                      }
-                    ]
+                    "type": "SYMBOL",
+                    "name": "gcode_arg_value"
                   }
                 ]
               },
@@ -1042,6 +1008,17 @@
         "content": {
           "type": "PATTERN",
           "value": "[a-z_][a-zA-Z0-9_.]*"
+        }
+      }
+    },
+    "gcode_arg_value": {
+      "type": "TOKEN",
+      "content": {
+        "type": "PREC",
+        "value": 5,
+        "content": {
+          "type": "PATTERN",
+          "value": "[A-Za-z_][A-Za-z0-9_.]*|[0-9]+(\\.[0-9]+)?|\"[^\"\\n]*\"|'[^'\\n]*'"
         }
       }
     },
