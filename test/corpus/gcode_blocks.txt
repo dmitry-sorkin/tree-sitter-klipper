@@ -1,0 +1,300 @@
+================================================================================
+gcode block: plain G-code with parameters
+================================================================================
+
+[gcode_macro TEST]
+gcode:
+    G1 X10 Y20 F3000
+    M104 S0
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (section
+    name: (section_name)
+    (section_item
+      (gcode_block
+        separator: (setting_separator)
+        (gcode_line
+          (gcode_line_content
+            (gcode_word)
+            (gcode_text)
+            (gcode_word)
+            (gcode_text)
+            (gcode_word)
+            (gcode_text)
+            (gcode_word)))
+        (gcode_line
+          (gcode_line_content
+            (gcode_word)
+            (gcode_text)
+            (gcode_word)))))))
+
+================================================================================
+gcode block: mixed Jinja if/endif with G-code inside
+================================================================================
+
+[gcode_macro TEST]
+gcode:
+    {% if printer.extruder.can_extrude %}
+    M104 S210
+    {% else %}
+    M104 S0
+    {% endif %}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (section
+    name: (section_name)
+    (section_item
+      (gcode_block
+        separator: (setting_separator)
+        (gcode_line
+          (gcode_line_content
+            (jinja_tag)))
+        (gcode_line
+          (gcode_line_content
+            (gcode_word)
+            (gcode_text)
+            (gcode_word)))
+        (gcode_line
+          (gcode_line_content
+            (jinja_tag)))
+        (gcode_line
+          (gcode_line_content
+            (gcode_word)
+            (gcode_text)
+            (gcode_word)))
+        (gcode_line
+          (gcode_line_content
+            (jinja_tag)))))))
+
+================================================================================
+gcode block: {{ variable }} interpolation in a G-code parameter
+================================================================================
+
+[gcode_macro TEST]
+gcode:
+    G1 X{{ printer.toolhead.position.x }} F3000
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (section
+    name: (section_name)
+    (section_item
+      (gcode_block
+        separator: (setting_separator)
+        (gcode_line
+          (gcode_line_content
+            (gcode_word)
+            (gcode_text)
+            (gcode_word)
+            (jinja_expression)
+            (gcode_text)
+            (gcode_word)))))))
+
+================================================================================
+gcode block: {# jinja #} comment
+================================================================================
+
+[gcode_macro TEST]
+gcode:
+    G28
+    {# this is a jinja comment #}
+    M104 S0
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (section
+    name: (section_name)
+    (section_item
+      (gcode_block
+        separator: (setting_separator)
+        (gcode_line
+          (gcode_line_content
+            (gcode_word)))
+        (gcode_line
+          (gcode_line_content
+            (jinja_comment)))
+        (gcode_line
+          (gcode_line_content
+            (gcode_word)
+            (gcode_text)
+            (gcode_word)))))))
+
+================================================================================
+gcode block: # text comment and ; text comment inside body
+================================================================================
+
+[gcode_macro TEST]
+gcode:
+    # hash comment line
+    G1 X10
+    ; semi comment line
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (section
+    name: (section_name)
+    (section_item
+      (gcode_block
+        separator: (setting_separator)
+        (gcode_line
+          (gcode_line_content
+            (gcode_line_comment)))
+        (gcode_line
+          (gcode_line_content
+            (gcode_word)
+            (gcode_text)
+            (gcode_word)))
+        (gcode_line
+          (gcode_line_content
+            (gcode_line_comment)))))))
+
+================================================================================
+gcode block: multi-line continuation with blank lines and trailing newline
+================================================================================
+
+[gcode_macro TEST]
+gcode:
+    G28
+
+    G1 X10 Y20
+
+    M104 S0
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (section
+    name: (section_name)
+    (section_item
+      (gcode_block
+        separator: (setting_separator)
+        (gcode_line
+          (gcode_line_content
+            (gcode_word)))
+        (gcode_line
+          (gcode_line_content
+            (gcode_word)
+            (gcode_text)
+            (gcode_word)
+            (gcode_text)
+            (gcode_word)))
+        (gcode_line
+          (gcode_line_content
+            (gcode_word)
+            (gcode_text)
+            (gcode_word)))))))
+
+================================================================================
+gcode block: Klipper extended commands with KEY=value parameters
+================================================================================
+
+[gcode_macro TEST]
+gcode:
+    SET_FAN_SPEED SPEED=1.0
+    RESPOND MSG="hello"
+    M118 Hello world
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (section
+    name: (section_name)
+    (section_item
+      (gcode_block
+        separator: (setting_separator)
+        (gcode_line
+          (gcode_line_content
+            (gcode_word)
+            (gcode_text)
+            (gcode_word)
+            (gcode_text)
+            (gcode_word)))
+        (gcode_line
+          (gcode_line_content
+            (gcode_word)
+            (gcode_text)
+            (gcode_word)
+            (gcode_text)))
+        (gcode_line
+          (gcode_line_content
+            (gcode_word)
+            (gcode_text)
+            (gcode_word)
+            (gcode_text)))))))
+
+================================================================================
+gcode block: same-line first-line value plus indented body
+================================================================================
+
+[gcode_macro TEST]
+gcode: M104 S0
+    G28
+    G1 X10
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (section
+    name: (section_name)
+    (section_item
+      (gcode_block
+        separator: (setting_separator)
+        first_line: (gcode_line_content
+          (gcode_word)
+          (gcode_text)
+          (gcode_word))
+        (gcode_line
+          (gcode_line_content
+            (gcode_word)))
+        (gcode_line
+          (gcode_line_content
+            (gcode_word)
+            (gcode_text)
+            (gcode_word)))))))
+
+================================================================================
+gcode block: empty gcode: with no body
+================================================================================
+
+[gcode_macro TEST]
+gcode:
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (section
+    name: (section_name)
+    (section_item
+      (gcode_block
+        separator: (setting_separator)))))
+
+================================================================================
+gcode block: inline {action_raise_error(...)} call
+================================================================================
+
+[gcode_macro TEST]
+gcode:
+    {action_raise_error("parking failed")}
+    {action_respond_info('hello')}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (section
+    name: (section_name)
+    (section_item
+      (gcode_block
+        separator: (setting_separator)
+        (gcode_line
+          (gcode_line_content
+            (klipper_action)))
+        (gcode_line
+          (gcode_line_content
+            (klipper_action)))))))

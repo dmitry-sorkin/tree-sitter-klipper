@@ -143,18 +143,17 @@ kinematics: corexy
 full-line comment with semicolon
 ================================================================================
 
+; top-level semi-colon comment
 [printer]
-; semi-colon comment
 kinematics: corexy
 
 --------------------------------------------------------------------------------
 
 (source_file
+  (comment
+    (line_comment))
   (section
     name: (section_name)
-    (section_item
-      (comment
-        (line_comment)))
     (section_item
       (setting
         key: (setting_key)
