@@ -106,7 +106,7 @@ module.exports = grammar({
 				optional(field("inline_comment", $.inline_comment)),
 			),
 
-		setting_key: ($) => /[A-Za-z_][A-Za-z0-9_.-]*/,
+		setting_key: ($) => /[a-z_][A-Za-z0-9_.-]*/,
 		setting_separator: ($) => /[=:]/,
 
 		// Value: a non-empty run of non-newline, non-whitespace characters,
@@ -195,7 +195,7 @@ module.exports = grammar({
 						),
 					),
 					alias(
-						token.immediate(prec(10, /[A-Z][0-9]*\.?[0-9]*/)),
+						token.immediate(prec(10, /[A-Z]/)),
 						$.gcode_parameter,
 					),
 					alias(token.immediate(prec(2, /[0-9]+(\.[0-9]+)?/)), $.gcode_number),
@@ -236,7 +236,7 @@ module.exports = grammar({
 							$.gcode_command,
 						),
 						alias(
-							token.immediate(prec(10, /[A-Z][0-9]*\.?[0-9]*/)),
+							token.immediate(prec(10, /[A-Z]/)),
 							$.gcode_parameter,
 						),
 						alias(
@@ -336,7 +336,7 @@ module.exports = grammar({
 			token(prec(3, /[GM][0-9]+(\.[0-9]+)?|[A-Z][A-Z0-9_]*[A-Z_][A-Z0-9_]*/)),
 		gcode_command: ($) =>
 			token(prec(3, /[GM][0-9]+(\.[0-9]+)?|[A-Z][A-Z0-9_]*[A-Z_][A-Z0-9_]*/)),
-		gcode_parameter: ($) => token(prec(10, /[A-Z][0-9]*\.?[0-9]*/)),
+		gcode_parameter: ($) => token(prec(10, /[A-Z]/)),
 		gcode_number: ($) => token(prec(2, /[0-9]+(\.[0-9]+)?/)),
 		gcode_string: ($) => token(prec(2, /"[^"\n]*"|'[^'\n]*'/)),
 		gcode_identifier: ($) => token(prec(2, /[a-z_][a-zA-Z0-9_.]*/)),

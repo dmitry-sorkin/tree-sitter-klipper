@@ -21,15 +21,19 @@ gcode:
             command: (gcode_command_name)
             (gcode_text)
             (gcode_parameter)
+            (gcode_number)
             (gcode_text)
             (gcode_parameter)
+            (gcode_number)
             (gcode_text)
-            (gcode_parameter)))
+            (gcode_parameter)
+            (gcode_number)))
         (gcode_line
           (gcode_line_content
             command: (gcode_command_name)
             (gcode_text)
-            (gcode_parameter)))))))
+            (gcode_parameter)
+            (gcode_number)))))))
 
 ================================================================================
 gcode block: mixed Jinja if/endif with G-code inside
@@ -66,7 +70,8 @@ gcode:
           (gcode_line_content
             command: (gcode_command_name)
             (gcode_text)
-            (gcode_parameter)))
+            (gcode_parameter)
+            (gcode_number)))
         (gcode_line
           (gcode_line_content
             (jinja_tag
@@ -76,7 +81,8 @@ gcode:
           (gcode_line_content
             command: (gcode_command_name)
             (gcode_text)
-            (gcode_parameter)))
+            (gcode_parameter)
+            (gcode_number)))
         (gcode_line
           (gcode_line_content
             (jinja_tag
@@ -115,7 +121,8 @@ gcode:
                 (jinja_operator)
                 (jinja_variable)))
             (gcode_text)
-            (gcode_parameter)))))))
+            (gcode_parameter)
+            (gcode_number)))))))
 
 ================================================================================
 gcode block: {# jinja #} comment
@@ -146,7 +153,8 @@ gcode:
           (gcode_line_content
             command: (gcode_command_name)
             (gcode_text)
-            (gcode_parameter)))))))
+            (gcode_parameter)
+            (gcode_number)))))))
 
 ================================================================================
 gcode block: # text comment and ; text comment inside body
@@ -174,7 +182,8 @@ gcode:
           (gcode_line_content
             command: (gcode_command_name)
             (gcode_text)
-            (gcode_parameter)))
+            (gcode_parameter)
+            (gcode_number)))
         (gcode_line
           (gcode_line_content
             (gcode_line_comment)))))))
@@ -208,13 +217,16 @@ gcode:
             command: (gcode_command_name)
             (gcode_text)
             (gcode_parameter)
+            (gcode_number)
             (gcode_text)
-            (gcode_parameter)))
+            (gcode_parameter)
+            (gcode_number)))
         (gcode_line
           (gcode_line_content
             command: (gcode_command_name)
             (gcode_text)
-            (gcode_parameter)))))))
+            (gcode_parameter)
+            (gcode_number)))))))
 
 ================================================================================
 gcode block: Klipper extended commands with KEY=value parameters
@@ -276,7 +288,8 @@ gcode: M104 S0
         first_line: (gcode_line_content
           command: (gcode_command_name)
           (gcode_text)
-          (gcode_parameter))
+          (gcode_parameter)
+          (gcode_number))
         (gcode_line
           (gcode_line_content
             command: (gcode_command_name)))
@@ -284,7 +297,8 @@ gcode: M104 S0
           (gcode_line_content
             command: (gcode_command_name)
             (gcode_text)
-            (gcode_parameter)))))))
+            (gcode_parameter)
+            (gcode_number)))))))
 
 ================================================================================
 gcode block: empty gcode: with no body
@@ -450,7 +464,8 @@ gcode:
               (jinja_content
                 (jinja_variable)))
             (gcode_text)
-            (gcode_parameter)))
+            (gcode_parameter)
+            (gcode_number)))
         (gcode_line
           (gcode_line_content
             command: (gcode_command_name)
@@ -574,10 +589,13 @@ gcode:
             command: (gcode_command_name)
             (gcode_text)
             (gcode_parameter)
+            (gcode_number)
             (gcode_text)
             (gcode_parameter)
+            (gcode_number)
             (gcode_text)
-            (gcode_parameter)))))))
+            (gcode_parameter)
+            (gcode_number)))))))
 
 ================================================================================
 gcode block: klipper extended command name vs arg name vs arg value
