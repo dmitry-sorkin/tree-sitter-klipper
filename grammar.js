@@ -43,6 +43,17 @@
 module.exports = grammar({
 	name: "klipper",
 
+	// Self-conflict on `section`: at end of section body, parser may
+	// either reduce the section (close it) or stay open to consume
+	// another section_item such as a `#`-prefixed line. Tree-sitter's
+	// LR(1) prefers reduce, which closes the section on the `#` token
+	// and turns subsequent settings into ERROR. Declaring the
+	// self-conflict lets GLR explore both parses; the in-section
+	// parse wins because it extends the section body.
+	conflicts: $ => [
+		[$.section],
+	],
+
 	rules: {
 		// Top-level: a file is a sequence of either sections or comments.
 		// Settings are only valid inside a section.
@@ -52,16 +63,14 @@ module.exports = grammar({
 		// Sections
 		// -------------------------------------------------------------------------
 		section: ($) =>
-			prec.left(
-				seq(
-					"[",
-					field("type", $.section_type),
-					optional(
-						seq(token.immediate(/[ \t]+/), field("name", $.section_name)),
-					),
-					"]",
-					repeat($.section_item),
+			seq(
+				"[",
+				field("type", $.section_type),
+				optional(
+					seq(token.immediate(/[ \t]+/), field("name", $.section_name)),
 				),
+				"]",
+				repeat($.section_item),
 			),
 
 		section_type: ($) => token(/[A-Za-z_][A-Za-z0-9_]*/),
@@ -80,13 +89,6 @@ module.exports = grammar({
 				// the key is `gcode`.
 				prec.dynamic(1, $.gcode_block),
 				$.setting,
-				// In-section comments appear as `comment` in the AST via the
-				// alias trick: tree-sitter sees the rule literally distinct
-				// from top-level `comment` so the in-section form wins.
-				// prec.dynamic(1) keeps the section open so a `#nospace`
-				// leftover after a value (e.g. `key: 0#nospace`) is consumed
-				// as a section_item rather than closing the section into a
-				// top-level comment.
 				prec.dynamic(1, alias($.line_comment, $.comment)),
 				$.save_config_line,
 			),

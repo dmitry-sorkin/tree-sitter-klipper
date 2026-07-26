@@ -192,15 +192,15 @@ position_endstop: 224.000
         key: (setting_key)
         separator: (setting_separator)
         value: (value_text
-          (value_part_two)))))
-  (comment
-    (save_config_line))
-  (comment
-    (save_config_line))
-  (comment
-    (save_config_line))
-  (comment
-    (save_config_line)))
+          (value_part_two))))
+    (section_item
+      (save_config_line))
+    (section_item
+      (save_config_line))
+    (section_item
+      (save_config_line))
+    (section_item
+      (save_config_line))))
 
 ================================================================================
 empty section then content
