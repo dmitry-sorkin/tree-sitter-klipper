@@ -247,6 +247,10 @@
               "name": "klipper_action"
             },
             {
+              "type": "SYMBOL",
+              "name": "jinja_bare_expression"
+            },
+            {
               "type": "ALIAS",
               "content": {
                 "type": "IMMEDIATE_TOKEN",
@@ -263,20 +267,24 @@
               "value": "gcode_line_comment"
             },
             {
-              "type": "ALIAS",
+              "type": "FIELD",
+              "name": "command",
               "content": {
-                "type": "IMMEDIATE_TOKEN",
+                "type": "ALIAS",
                 "content": {
-                  "type": "PREC",
-                  "value": 3,
+                  "type": "IMMEDIATE_TOKEN",
                   "content": {
-                    "type": "PATTERN",
-                    "value": "[GM][0-9]+(\\.[0-9]+)?|[A-Z][A-Z0-9_]*[A-Z_][A-Z0-9_]*"
+                    "type": "PREC",
+                    "value": 3,
+                    "content": {
+                      "type": "PATTERN",
+                      "value": "[GM][0-9]+(\\.[0-9]+)?|[A-Z][A-Z0-9_]*[A-Z_][A-Z0-9_]*"
+                    }
                   }
-                }
-              },
-              "named": true,
-              "value": "gcode_command"
+                },
+                "named": true,
+                "value": "gcode_command"
+              }
             },
             {
               "type": "ALIAS",
@@ -364,6 +372,10 @@
               {
                 "type": "SYMBOL",
                 "name": "klipper_action"
+              },
+              {
+                "type": "SYMBOL",
+                "name": "jinja_bare_expression"
               },
               {
                 "type": "ALIAS",
@@ -529,6 +541,34 @@
         }
       ]
     },
+    "jinja_bare_expression": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "IMMEDIATE_TOKEN",
+          "content": {
+            "type": "STRING",
+            "value": "{"
+          }
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "jinja_content"
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
+        },
+        {
+          "type": "STRING",
+          "value": "}"
+        }
+      ]
+    },
     "jinja_content": {
       "type": "REPEAT1",
       "content": {
@@ -552,6 +592,10 @@
           },
           {
             "type": "SYMBOL",
+            "name": "jinja_bracket"
+          },
+          {
+            "type": "SYMBOL",
             "name": "jinja_variable"
           }
         ]
@@ -564,7 +608,7 @@
         "value": 3,
         "content": {
           "type": "PATTERN",
-          "value": "((?:if|elif|else|endif|for|endfor|in|set|not|and|or|is|none|None|true|True|false|False|range))"
+          "value": "(if|elif|else|endif|for|endfor|in|set|not|and|or|is|none|None|true|True|false|False|range)[^A-Za-z0-9_]"
         }
       }
     },
@@ -597,7 +641,18 @@
         "value": 1,
         "content": {
           "type": "PATTERN",
-          "value": "[|()\\x5b\\x5d.,:=+*<>!%_-]+"
+          "value": "[|=+\\-*<>!%.:_]+"
+        }
+      }
+    },
+    "jinja_bracket": {
+      "type": "TOKEN",
+      "content": {
+        "type": "PREC",
+        "value": 1,
+        "content": {
+          "type": "PATTERN",
+          "value": "\\(|\\)|\\[|\\]"
         }
       }
     },

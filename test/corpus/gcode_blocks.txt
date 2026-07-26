@@ -17,7 +17,7 @@ gcode:
         separator: (setting_separator)
         (gcode_line
           (gcode_line_content
-            (gcode_command)
+            command: (gcode_command)
             (gcode_text)
             (gcode_parameter)
             (gcode_text)
@@ -26,7 +26,7 @@ gcode:
             (gcode_parameter)))
         (gcode_line
           (gcode_line_content
-            (gcode_command)
+            command: (gcode_command)
             (gcode_text)
             (gcode_parameter)))))))
 
@@ -62,7 +62,7 @@ gcode:
                 (jinja_variable)))))
         (gcode_line
           (gcode_line_content
-            (gcode_command)
+            command: (gcode_command)
             (gcode_text)
             (gcode_parameter)))
         (gcode_line
@@ -72,7 +72,7 @@ gcode:
                 (jinja_keyword)))))
         (gcode_line
           (gcode_line_content
-            (gcode_command)
+            command: (gcode_command)
             (gcode_text)
             (gcode_parameter)))
         (gcode_line
@@ -99,7 +99,7 @@ gcode:
         separator: (setting_separator)
         (gcode_line
           (gcode_line_content
-            (gcode_command)
+            command: (gcode_command)
             (gcode_text)
             (gcode_parameter)
             (jinja_expression
@@ -134,13 +134,13 @@ gcode:
         separator: (setting_separator)
         (gcode_line
           (gcode_line_content
-            (gcode_command)))
+            command: (gcode_command)))
         (gcode_line
           (gcode_line_content
             (jinja_comment)))
         (gcode_line
           (gcode_line_content
-            (gcode_command)
+            command: (gcode_command)
             (gcode_text)
             (gcode_parameter)))))))
 
@@ -167,7 +167,7 @@ gcode:
             (gcode_line_comment)))
         (gcode_line
           (gcode_line_content
-            (gcode_command)
+            command: (gcode_command)
             (gcode_text)
             (gcode_parameter)))
         (gcode_line
@@ -196,17 +196,17 @@ gcode:
         separator: (setting_separator)
         (gcode_line
           (gcode_line_content
-            (gcode_command)))
+            command: (gcode_command)))
         (gcode_line
           (gcode_line_content
-            (gcode_command)
+            command: (gcode_command)
             (gcode_text)
             (gcode_parameter)
             (gcode_text)
             (gcode_parameter)))
         (gcode_line
           (gcode_line_content
-            (gcode_command)
+            command: (gcode_command)
             (gcode_text)
             (gcode_parameter)))))))
 
@@ -230,21 +230,21 @@ gcode:
         separator: (setting_separator)
         (gcode_line
           (gcode_line_content
-            (gcode_command)
+            command: (gcode_command)
             (gcode_text)
             (gcode_command)
             (gcode_text)
             (gcode_number)))
         (gcode_line
           (gcode_line_content
-            (gcode_command)
+            command: (gcode_command)
             (gcode_text)
             (gcode_command)
             (gcode_text)
             (gcode_string)))
         (gcode_line
           (gcode_line_content
-            (gcode_command)
+            command: (gcode_command)
             (gcode_text)
             (gcode_parameter)
             (gcode_text)))))))
@@ -267,15 +267,15 @@ gcode: M104 S0
       (gcode_block
         separator: (setting_separator)
         first_line: (gcode_line_content
-          (gcode_command)
+          command: (gcode_command)
           (gcode_text)
           (gcode_parameter))
         (gcode_line
           (gcode_line_content
-            (gcode_command)))
+            command: (gcode_command)))
         (gcode_line
           (gcode_line_content
-            (gcode_command)
+            command: (gcode_command)
             (gcode_text)
             (gcode_parameter)))))))
 
@@ -324,13 +324,13 @@ gcode:
               (jinja_string))))))))
 
 ================================================================================
-gcode block: nested Jinja content and bare-brace interpolation
+gcode block: keywords are not matched inside identifiers
 ================================================================================
 
 [gcode_macro TEST]
 gcode:
-    {% if home_all or 'Z' in params %}
-    G1 X{ printer.toolhead.position.x }
+    {{ printer.int_value }}{{ settings.x }}{% if cond.set %}
+    {% set x = 1 %}
 
 --------------------------------------------------------------------------------
 
@@ -342,17 +342,97 @@ gcode:
         separator: (setting_separator)
         (gcode_line
           (gcode_line_content
+            (jinja_expression
+              (jinja_content
+                (jinja_variable)
+                (jinja_operator)
+                (jinja_variable)))
+            (jinja_expression
+              (jinja_content
+                (jinja_variable)
+                (jinja_operator)
+                (jinja_variable)))
             (jinja_tag
               (jinja_content
                 (jinja_keyword)
                 (jinja_variable)
-                (jinja_keyword)
-                (jinja_string)
-                (jinja_keyword)
-                (jinja_variable)))))
+                (jinja_operator)
+                (jinja_keyword)))))
         (gcode_line
           (gcode_line_content
-            (gcode_command)
+            (jinja_tag
+              (jinja_content
+                (jinja_keyword)
+                (jinja_variable)
+                (jinja_operator)
+                (jinja_number)))))))))
+
+================================================================================
+gcode block: jinja brackets split from operators
+================================================================================
+
+[gcode_macro TEST]
+gcode:
+    {{ a + b * (c - d) }}
+    {{ printer.cfg["k"].x }}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (section
+    name: (section_name)
+    (section_item
+      (gcode_block
+        separator: (setting_separator)
+        (gcode_line
+          (gcode_line_content
+            (jinja_expression
+              (jinja_content
+                (jinja_variable)
+                (jinja_operator)
+                (jinja_variable)
+                (jinja_operator)
+                (jinja_bracket)
+                (jinja_variable)
+                (jinja_operator)
+                (jinja_variable)
+                (jinja_bracket)))))
+        (gcode_line
+          (gcode_line_content
+            (jinja_expression
+              (jinja_content
+                (jinja_variable)
+                (jinja_operator)
+                (jinja_variable)
+                (jinja_bracket)
+                (jinja_string)
+                (jinja_bracket)
+                (jinja_operator)
+                (jinja_variable)))))))))
+
+================================================================================
+gcode block: bare-brace jinja expression in G-code parameter
+================================================================================
+
+[gcode_macro TEST]
+gcode:
+    G1 X{W_position} F30000
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (section
+    name: (section_name)
+    (section_item
+      (gcode_block
+        separator: (setting_separator)
+        (gcode_line
+          (gcode_line_content
+            command: (gcode_command)
             (gcode_text)
             (gcode_parameter)
-            (gcode_text)))))))
+            (jinja_bare_expression
+              (jinja_content
+                (jinja_variable)))
+            (gcode_text)
+            (gcode_parameter)))))))

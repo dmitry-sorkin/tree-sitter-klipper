@@ -72,10 +72,21 @@
   {
     "type": "gcode_line_content",
     "named": true,
-    "fields": {},
+    "fields": {
+      "command": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "gcode_command",
+            "named": true
+          }
+        ]
+      }
+    },
     "children": {
       "multiple": true,
-      "required": true,
+      "required": false,
       "types": [
         {
           "type": "gcode_command",
@@ -102,6 +113,10 @@
           "named": true
         },
         {
+          "type": "jinja_bare_expression",
+          "named": true
+        },
+        {
           "type": "jinja_comment",
           "named": true
         },
@@ -121,6 +136,21 @@
     }
   },
   {
+    "type": "jinja_bare_expression",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "jinja_content",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "jinja_content",
     "named": true,
     "fields": {},
@@ -128,6 +158,10 @@
       "multiple": true,
       "required": true,
       "types": [
+        {
+          "type": "jinja_bracket",
+          "named": true
+        },
         {
           "type": "jinja_keyword",
           "named": true
@@ -370,6 +404,10 @@
   },
   {
     "type": "gcode_text",
+    "named": true
+  },
+  {
+    "type": "jinja_bracket",
     "named": true
   },
   {

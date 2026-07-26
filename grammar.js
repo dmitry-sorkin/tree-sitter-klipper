@@ -140,6 +140,12 @@ module.exports = grammar({
 		// A line's content is a flat sequence of tokens. Specific tokens
 		// (Jinja, line comments) win via precedence; the rest falls back
 		// to `gcode_text` so unknown identifiers never break the parse.
+		// The FIRST token on the line is the actual command (G1, M104,
+		// SET_FAN_SPEED, RESPOND, ...); later `gcode_command` tokens
+		// are argument names (SPEED, MSG, LOG, ...). The first choice
+		// below exposes that distinction via the `command` field on the
+		// first `gcode_command`; the repeat() below keeps argument-name
+		// tokens plain so highlights can colour them differently.
 		gcode_line_content: ($) =>
 			seq(
 				choice(
@@ -147,25 +153,35 @@ module.exports = grammar({
 					$.jinja_expression,
 					$.jinja_comment,
 					$.klipper_action,
+					$.jinja_bare_expression,
 					alias(token.immediate(prec(3, /[#;][^\n]*/)), $.gcode_line_comment),
-					alias(
-						token.immediate(
-							prec(3, /[GM][0-9]+(\.[0-9]+)?|[A-Z][A-Z0-9_]*[A-Z_][A-Z0-9_]*/),
+					field(
+						"command",
+						alias(
+							token.immediate(
+								prec(
+									3,
+									/[GM][0-9]+(\.[0-9]+)?|[A-Z][A-Z0-9_]*[A-Z_][A-Z0-9_]*/,
+								),
+							),
+							$.gcode_command,
 						),
-						$.gcode_command,
 					),
 					alias(
 						token.immediate(prec(2, /[A-Z][0-9]*\.?[0-9]*/)),
 						$.gcode_parameter,
 					),
+					alias(token.immediate(prec(2, /[0-9]+(\.[0-9]+)?/)), $.gcode_number),
 					alias(
-						token.immediate(prec(2, /[0-9]+(\.[0-9]+)?/)),
-						$.gcode_number,
+						token.immediate(prec(2, /"[^"\n]*"|'[^'\n]*'/)),
+						$.gcode_string,
 					),
-					alias(token.immediate(prec(2, /"[^"\n]*"|'[^'\n]*'/)), $.gcode_string),
 					alias(
 						token.immediate(
-							prec(1, /[ \t]+|[^A-Z{#;%\s\n0-9"'][^A-Z0-9\n"']*|\{[ \t][^}\n]*\}/),
+							prec(
+								1,
+								/[ \t]+|[^A-Z{#;%\s\n0-9"'][^A-Z0-9\n"']*|\{[ \t][^}\n]*\}/,
+							),
 						),
 						$.gcode_text,
 					),
@@ -176,10 +192,14 @@ module.exports = grammar({
 						$.jinja_expression,
 						$.jinja_comment,
 						$.klipper_action,
+						$.jinja_bare_expression,
 						alias(token.immediate(prec(3, /[#;][^\n]*/)), $.gcode_line_comment),
 						alias(
 							token.immediate(
-								prec(3, /[GM][0-9]+(\.[0-9]+)?|[A-Z][A-Z0-9_]*[A-Z_][A-Z0-9_]*/),
+								prec(
+									3,
+									/[GM][0-9]+(\.[0-9]+)?|[A-Z][A-Z0-9_]*[A-Z_][A-Z0-9_]*/,
+								),
 							),
 							$.gcode_command,
 						),
@@ -197,7 +217,10 @@ module.exports = grammar({
 						),
 						alias(
 							token.immediate(
-								prec(1, /[ \t]+|[^A-Z{#;%\s\n0-9"'][^A-Z0-9\n"']*|\{[ \t][^}\n]*\}/),
+								prec(
+									1,
+									/[ \t]+|[^A-Z{#;%\s\n0-9"'][^A-Z0-9\n"']*|\{[ \t][^}\n]*\}/,
+								),
 							),
 							$.gcode_text,
 						),
@@ -208,8 +231,15 @@ module.exports = grammar({
 		// Jinja constructs. Structural nodes expose their contents for
 		// fine-grained highlighting.
 		jinja_tag: ($) =>
-			seq(token.immediate("{%"), optional($.jinja_content), token(prec(2, "%}"))),
-		jinja_expression: ($) => seq(token.immediate("{{"), optional($.jinja_content), "}}"),
+			seq(
+				token.immediate("{%"),
+				optional($.jinja_content),
+				token(prec(2, "%}")),
+			),
+		jinja_expression: ($) =>
+			seq(token.immediate("{{"), optional($.jinja_content), "}}"),
+		jinja_bare_expression: ($) =>
+			seq(token.immediate("{"), optional($.jinja_content), "}"),
 		jinja_content: ($) =>
 			repeat1(
 				choice(
@@ -217,6 +247,7 @@ module.exports = grammar({
 					$.jinja_string,
 					$.jinja_number,
 					$.jinja_operator,
+					$.jinja_bracket,
 					$.jinja_variable,
 				),
 			),
@@ -224,12 +255,13 @@ module.exports = grammar({
 			token(
 				prec(
 					3,
-					/((?:if|elif|else|endif|for|endfor|in|set|not|and|or|is|none|None|true|True|false|False|range))/,
+					/(if|elif|else|endif|for|endfor|in|set|not|and|or|is|none|None|true|True|false|False|range)[^A-Za-z0-9_]/,
 				),
 			),
 		jinja_string: ($) => token(prec(2, /'[^'\n]*'|"[^"\n]*"/)),
 		jinja_number: ($) => token(prec(2, /[0-9]+(\.[0-9]+)?/)),
-		jinja_operator: ($) => token(prec(1, /[|()\x5b\x5d.,:=+*<>!%_-]+/)),
+		jinja_operator: ($) => token(prec(1, /[|=+\-*<>!%.:_]+/)),
+		jinja_bracket: ($) => token(prec(1, /\(|\)|\[|\]/)),
 		jinja_variable: ($) => token(prec(1, /[A-Za-z_][A-Za-z0-9_]*/)),
 		jinja_comment: ($) => token.immediate(prec(2, /\{#[\s\S]*?#\}/)),
 		// Klipper inline action calls: `{action_raise_error("...")}`,
@@ -263,7 +295,9 @@ module.exports = grammar({
 
 		// Fallback for anything that isn't a token above.
 		gcode_text: ($) =>
-			token(prec(1, /[ \t]+|[^A-Z{#;%\s\n0-9"'][^A-Z0-9\n"']*|\{[ \t][^}\n]*\}/)),
+			token(
+				prec(1, /[ \t]+|[^A-Z{#;%\s\n0-9"'][^A-Z0-9\n"']*|\{[ \t][^}\n]*\}/),
+			),
 
 		// -------------------------------------------------------------------------
 		// Comments
