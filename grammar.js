@@ -212,7 +212,7 @@ module.exports = grammar({
 						token.immediate(
 							prec(
 								1,
-								/[ \t]+|[^A-Z{#;%\s\n0-9"'][^A-Z0-9\n"']*|\{[ \t][^}\n]*\}/,
+								/[ \t]+|[^A-Z{#;%\s\n0-9"'][^A-Z0-9\n"']*/,
 							),
 						),
 						$.gcode_text,
@@ -256,7 +256,7 @@ module.exports = grammar({
 							token.immediate(
 								prec(
 									1,
-									/[ \t]+|[^A-Z{#;%\s\n0-9"'][^A-Z0-9\n"']*|\{[ \t][^}\n]*\}/,
+									/[ \t]+|[^A-Z{#;%\s\n0-9"'][^A-Z0-9\n"']*/,
 								),
 							),
 							$.gcode_text,
@@ -356,7 +356,7 @@ module.exports = grammar({
 		// Fallback for anything that isn't a token above.
 		gcode_text: ($) =>
 			token(
-				prec(1, /[ \t]+|[^A-Z{#;%\s\n0-9"'][^A-Z0-9\n"']*|\{[ \t][^}\n]*\}/),
+				prec(1, /[ \t]+|[^A-Z{#;%\s\n0-9"'][^A-Z0-9\n"']*/),
 			),
 
 		// -------------------------------------------------------------------------
