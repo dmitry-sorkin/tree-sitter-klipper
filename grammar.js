@@ -101,8 +101,8 @@ module.exports = grammar({
 				field("key", $.setting_key),
 				optional(/[ \t]+/),
 				field("separator", $.setting_separator),
-				token.immediate(/[ \t]+/),
-				field("value", $.value_text),
+				token.immediate(/[ \t]*/),
+				optional(field("value", $.value_text)),
 				optional(field("inline_comment", $.inline_comment)),
 			),
 
