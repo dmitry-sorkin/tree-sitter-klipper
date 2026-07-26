@@ -335,6 +335,55 @@
               "value": "gcode_string"
             },
             {
+              "type": "SYMBOL",
+              "name": "gcode_identifier"
+            },
+            {
+              "type": "SEQ",
+              "members": [
+                {
+                  "type": "IMMEDIATE_TOKEN",
+                  "content": {
+                    "type": "PREC",
+                    "value": 3,
+                    "content": {
+                      "type": "PATTERN",
+                      "value": "="
+                    }
+                  }
+                },
+                {
+                  "type": "CHOICE",
+                  "members": [
+                    {
+                      "type": "SYMBOL",
+                      "name": "gcode_identifier"
+                    },
+                    {
+                      "type": "SYMBOL",
+                      "name": "gcode_number"
+                    },
+                    {
+                      "type": "SYMBOL",
+                      "name": "gcode_string"
+                    },
+                    {
+                      "type": "SYMBOL",
+                      "name": "gcode_command"
+                    },
+                    {
+                      "type": "SYMBOL",
+                      "name": "gcode_parameter"
+                    },
+                    {
+                      "type": "SYMBOL",
+                      "name": "gcode_text"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
               "type": "ALIAS",
               "content": {
                 "type": "IMMEDIATE_TOKEN",
@@ -456,6 +505,55 @@
                 },
                 "named": true,
                 "value": "gcode_string"
+              },
+              {
+                "type": "SYMBOL",
+                "name": "gcode_identifier"
+              },
+              {
+                "type": "SEQ",
+                "members": [
+                  {
+                    "type": "IMMEDIATE_TOKEN",
+                    "content": {
+                      "type": "PREC",
+                      "value": 3,
+                      "content": {
+                        "type": "PATTERN",
+                        "value": "="
+                      }
+                    }
+                  },
+                  {
+                    "type": "CHOICE",
+                    "members": [
+                      {
+                        "type": "SYMBOL",
+                        "name": "gcode_identifier"
+                      },
+                      {
+                        "type": "SYMBOL",
+                        "name": "gcode_number"
+                      },
+                      {
+                        "type": "SYMBOL",
+                        "name": "gcode_string"
+                      },
+                      {
+                        "type": "SYMBOL",
+                        "name": "gcode_command"
+                      },
+                      {
+                        "type": "SYMBOL",
+                        "name": "gcode_parameter"
+                      },
+                      {
+                        "type": "SYMBOL",
+                        "name": "gcode_text"
+                      }
+                    ]
+                  }
+                ]
               },
               {
                 "type": "ALIAS",
@@ -580,6 +678,10 @@
           },
           {
             "type": "SYMBOL",
+            "name": "jinja_builtin"
+          },
+          {
+            "type": "SYMBOL",
             "name": "jinja_string"
           },
           {
@@ -608,9 +710,36 @@
         "value": 3,
         "content": {
           "type": "PATTERN",
-          "value": "(if|elif|else|endif|for|endfor|in|set|not|and|or|is|none|None|true|True|false|False|range)[^A-Za-z0-9_]"
+          "value": "(if|elif|else|endif|for|endfor|set|not|and|or|is|true|True|false|False)[^A-Za-z0-9_]"
         }
       }
+    },
+    "jinja_builtin": {
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "TOKEN",
+          "content": {
+            "type": "PREC",
+            "value": 2,
+            "content": {
+              "type": "PATTERN",
+              "value": "(default|int|float|string|list|dict|abs|max|min|sum|length|count|sort|reverse|map|join|upper|lower|capitalize|title|replace|trim|truncate|striptags|escape|safe|forceescape|attr|batch|groupby|select|reject|selectattr|rejectattr|items|pprint|urlencode|wordcount|wordwrap|filesizeformat|indent|center|first|last|slice|random|in|none|None|range|defined|undefined|even|odd|divisibleby|iterable|mapping|number|sequence|callable|test|sameas)[^A-Za-z0-9_{}]"
+            }
+          }
+        },
+        {
+          "type": "TOKEN",
+          "content": {
+            "type": "PREC",
+            "value": 1,
+            "content": {
+              "type": "PATTERN",
+              "value": "(default|int|float|string|list|dict|abs|max|min|sum|length|count|sort|reverse|map|join|upper|lower|capitalize|title|replace|trim|truncate|striptags|escape|safe|forceescape|attr|batch|groupby|select|reject|selectattr|rejectattr|items|pprint|urlencode|wordcount|wordwrap|filesizeformat|indent|center|first|last|slice|random|in|none|None|range|defined|undefined|even|odd|divisibleby|iterable|mapping|number|sequence|callable|test|sameas)"
+            }
+          }
+        }
+      ]
     },
     "jinja_string": {
       "type": "TOKEN",
@@ -811,6 +940,17 @@
         "content": {
           "type": "PATTERN",
           "value": "\"[^\"\\n]*\"|'[^'\\n]*'"
+        }
+      }
+    },
+    "gcode_identifier": {
+      "type": "TOKEN",
+      "content": {
+        "type": "PREC",
+        "value": 2,
+        "content": {
+          "type": "PATTERN",
+          "value": "[a-z_][a-zA-Z0-9_.]*"
         }
       }
     },

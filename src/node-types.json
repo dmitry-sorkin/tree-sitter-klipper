@@ -93,6 +93,10 @@
           "named": true
         },
         {
+          "type": "gcode_identifier",
+          "named": true
+        },
+        {
           "type": "gcode_line_comment",
           "named": true
         },
@@ -136,6 +140,11 @@
     }
   },
   {
+    "type": "gcode_number",
+    "named": true,
+    "fields": {}
+  },
+  {
     "type": "jinja_bare_expression",
     "named": true,
     "fields": {},
@@ -151,6 +160,11 @@
     }
   },
   {
+    "type": "jinja_builtin",
+    "named": true,
+    "fields": {}
+  },
+  {
     "type": "jinja_content",
     "named": true,
     "fields": {},
@@ -160,6 +174,10 @@
       "types": [
         {
           "type": "jinja_bracket",
+          "named": true
+        },
+        {
+          "type": "jinja_builtin",
           "named": true
         },
         {
@@ -199,6 +217,11 @@
         }
       ]
     }
+  },
+  {
+    "type": "jinja_number",
+    "named": true,
+    "fields": {}
   },
   {
     "type": "jinja_tag",
@@ -387,11 +410,11 @@
     "named": true
   },
   {
-    "type": "gcode_line_comment",
+    "type": "gcode_identifier",
     "named": true
   },
   {
-    "type": "gcode_number",
+    "type": "gcode_line_comment",
     "named": true
   },
   {
@@ -416,10 +439,6 @@
   },
   {
     "type": "jinja_keyword",
-    "named": true
-  },
-  {
-    "type": "jinja_number",
     "named": true
   },
   {

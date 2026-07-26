@@ -176,6 +176,18 @@ module.exports = grammar({
 						token.immediate(prec(2, /"[^"\n]*"|'[^'\n]*'/)),
 						$.gcode_string,
 					),
+					$.gcode_identifier,
+					seq(
+						token.immediate(prec(3, /=/)),
+						choice(
+							$.gcode_identifier,
+							$.gcode_number,
+							$.gcode_string,
+							$.gcode_command,
+							$.gcode_parameter,
+							$.gcode_text,
+						),
+					),
 					alias(
 						token.immediate(
 							prec(
@@ -215,6 +227,18 @@ module.exports = grammar({
 							token.immediate(prec(2, /"[^"\n]*"|'[^'\n]*'/)),
 							$.gcode_string,
 						),
+						$.gcode_identifier,
+						seq(
+							token.immediate(prec(3, /=/)),
+							choice(
+								$.gcode_identifier,
+								$.gcode_number,
+								$.gcode_string,
+								$.gcode_command,
+								$.gcode_parameter,
+								$.gcode_text,
+							),
+						),
 						alias(
 							token.immediate(
 								prec(
@@ -244,6 +268,7 @@ module.exports = grammar({
 			repeat1(
 				choice(
 					$.jinja_keyword,
+					$.jinja_builtin,
 					$.jinja_string,
 					$.jinja_number,
 					$.jinja_operator,
@@ -255,7 +280,22 @@ module.exports = grammar({
 			token(
 				prec(
 					3,
-					/(if|elif|else|endif|for|endfor|in|set|not|and|or|is|none|None|true|True|false|False|range)[^A-Za-z0-9_]/,
+					/(if|elif|else|endif|for|endfor|set|not|and|or|is|true|True|false|False)[^A-Za-z0-9_]/,
+				),
+			),
+		jinja_builtin: ($) =>
+			choice(
+				token(
+					prec(
+						2,
+						/(default|int|float|string|list|dict|abs|max|min|sum|length|count|sort|reverse|map|join|upper|lower|capitalize|title|replace|trim|truncate|striptags|escape|safe|forceescape|attr|batch|groupby|select|reject|selectattr|rejectattr|items|pprint|urlencode|wordcount|wordwrap|filesizeformat|indent|center|first|last|slice|random|in|none|None|range|defined|undefined|even|odd|divisibleby|iterable|mapping|number|sequence|callable|test|sameas)[^A-Za-z0-9_{}]/,
+					),
+				),
+				token(
+					prec(
+						1,
+						/(default|int|float|string|list|dict|abs|max|min|sum|length|count|sort|reverse|map|join|upper|lower|capitalize|title|replace|trim|truncate|striptags|escape|safe|forceescape|attr|batch|groupby|select|reject|selectattr|rejectattr|items|pprint|urlencode|wordcount|wordwrap|filesizeformat|indent|center|first|last|slice|random|in|none|None|range|defined|undefined|even|odd|divisibleby|iterable|mapping|number|sequence|callable|test|sameas)/,
+					),
 				),
 			),
 		jinja_string: ($) => token(prec(2, /'[^'\n]*'|"[^"\n]*"/)),
@@ -292,6 +332,8 @@ module.exports = grammar({
 		gcode_parameter: ($) => token(prec(2, /[A-Z][0-9]*\.?[0-9]*/)),
 		gcode_number: ($) => token(prec(2, /[0-9]+(\.[0-9]+)?/)),
 		gcode_string: ($) => token(prec(2, /"[^"\n]*"|'[^'\n]*'/)),
+		gcode_identifier: ($) =>
+			token(prec(2, /[a-z_][a-zA-Z0-9_.]*/)),
 
 		// Fallback for anything that isn't a token above.
 		gcode_text: ($) =>
