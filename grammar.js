@@ -164,7 +164,7 @@ module.exports = grammar({
 									/[GM][0-9]+(\.[0-9]+)?|[A-Z][A-Z0-9_]*[A-Z_][A-Z0-9_]*/,
 								),
 							),
-							$.gcode_command,
+							$.gcode_command_name,
 						),
 					),
 					alias(
@@ -327,13 +327,14 @@ module.exports = grammar({
 
 		gcode_line_comment: ($) => token(prec(3, /[#;][^\n]*/)),
 
+		gcode_command_name: ($) =>
+			token(prec(3, /[GM][0-9]+(\.[0-9]+)?|[A-Z][A-Z0-9_]*[A-Z_][A-Z0-9_]*/)),
 		gcode_command: ($) =>
 			token(prec(3, /[GM][0-9]+(\.[0-9]+)?|[A-Z][A-Z0-9_]*[A-Z_][A-Z0-9_]*/)),
 		gcode_parameter: ($) => token(prec(2, /[A-Z][0-9]*\.?[0-9]*/)),
 		gcode_number: ($) => token(prec(2, /[0-9]+(\.[0-9]+)?/)),
 		gcode_string: ($) => token(prec(2, /"[^"\n]*"|'[^'\n]*'/)),
-		gcode_identifier: ($) =>
-			token(prec(2, /[a-z_][a-zA-Z0-9_.]*/)),
+		gcode_identifier: ($) => token(prec(2, /[a-z_][a-zA-Z0-9_.]*/)),
 
 		// Fallback for anything that isn't a token above.
 		gcode_text: ($) =>

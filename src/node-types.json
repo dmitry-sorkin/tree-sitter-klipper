@@ -78,7 +78,7 @@
         "required": false,
         "types": [
           {
-            "type": "gcode_command",
+            "type": "gcode_command_name",
             "named": true
           }
         ]
@@ -407,6 +407,10 @@
   },
   {
     "type": "gcode_command",
+    "named": true
+  },
+  {
+    "type": "gcode_command_name",
     "named": true
   },
   {

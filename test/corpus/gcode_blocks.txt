@@ -17,7 +17,7 @@ gcode:
         separator: (setting_separator)
         (gcode_line
           (gcode_line_content
-            command: (gcode_command)
+            command: (gcode_command_name)
             (gcode_text)
             (gcode_parameter)
             (gcode_text)
@@ -26,7 +26,7 @@ gcode:
             (gcode_parameter)))
         (gcode_line
           (gcode_line_content
-            command: (gcode_command)
+            command: (gcode_command_name)
             (gcode_text)
             (gcode_parameter)))))))
 
@@ -62,7 +62,7 @@ gcode:
                 (jinja_variable)))))
         (gcode_line
           (gcode_line_content
-            command: (gcode_command)
+            command: (gcode_command_name)
             (gcode_text)
             (gcode_parameter)))
         (gcode_line
@@ -72,7 +72,7 @@ gcode:
                 (jinja_keyword)))))
         (gcode_line
           (gcode_line_content
-            command: (gcode_command)
+            command: (gcode_command_name)
             (gcode_text)
             (gcode_parameter)))
         (gcode_line
@@ -99,7 +99,7 @@ gcode:
         separator: (setting_separator)
         (gcode_line
           (gcode_line_content
-            command: (gcode_command)
+            command: (gcode_command_name)
             (gcode_text)
             (gcode_parameter)
             (jinja_expression
@@ -134,13 +134,13 @@ gcode:
         separator: (setting_separator)
         (gcode_line
           (gcode_line_content
-            command: (gcode_command)))
+            command: (gcode_command_name)))
         (gcode_line
           (gcode_line_content
             (jinja_comment)))
         (gcode_line
           (gcode_line_content
-            command: (gcode_command)
+            command: (gcode_command_name)
             (gcode_text)
             (gcode_parameter)))))))
 
@@ -167,7 +167,7 @@ gcode:
             (gcode_line_comment)))
         (gcode_line
           (gcode_line_content
-            command: (gcode_command)
+            command: (gcode_command_name)
             (gcode_text)
             (gcode_parameter)))
         (gcode_line
@@ -196,17 +196,17 @@ gcode:
         separator: (setting_separator)
         (gcode_line
           (gcode_line_content
-            command: (gcode_command)))
+            command: (gcode_command_name)))
         (gcode_line
           (gcode_line_content
-            command: (gcode_command)
+            command: (gcode_command_name)
             (gcode_text)
             (gcode_parameter)
             (gcode_text)
             (gcode_parameter)))
         (gcode_line
           (gcode_line_content
-            command: (gcode_command)
+            command: (gcode_command_name)
             (gcode_text)
             (gcode_parameter)))))))
 
@@ -230,19 +230,19 @@ gcode:
         separator: (setting_separator)
         (gcode_line
           (gcode_line_content
-            command: (gcode_command)
+            command: (gcode_command_name)
             (gcode_text)
             (gcode_command)
             (gcode_number)))
         (gcode_line
           (gcode_line_content
-            command: (gcode_command)
+            command: (gcode_command_name)
             (gcode_text)
             (gcode_command)
             (gcode_string)))
         (gcode_line
           (gcode_line_content
-            command: (gcode_command)
+            command: (gcode_command_name)
             (gcode_text)
             (gcode_parameter)
             (gcode_identifier)
@@ -266,15 +266,15 @@ gcode: M104 S0
       (gcode_block
         separator: (setting_separator)
         first_line: (gcode_line_content
-          command: (gcode_command)
+          command: (gcode_command_name)
           (gcode_text)
           (gcode_parameter))
         (gcode_line
           (gcode_line_content
-            command: (gcode_command)))
+            command: (gcode_command_name)))
         (gcode_line
           (gcode_line_content
-            command: (gcode_command)
+            command: (gcode_command_name)
             (gcode_text)
             (gcode_parameter)))))))
 
@@ -428,7 +428,7 @@ gcode:
         separator: (setting_separator)
         (gcode_line
           (gcode_line_content
-            command: (gcode_command)
+            command: (gcode_command_name)
             (gcode_text)
             (gcode_parameter)
             (jinja_bare_expression
@@ -438,7 +438,7 @@ gcode:
             (gcode_parameter)))
         (gcode_line
           (gcode_line_content
-            command: (gcode_command)
+            command: (gcode_command_name)
             (gcode_text)
             (gcode_parameter)
             (jinja_bare_expression
@@ -475,7 +475,7 @@ gcode:
         (setting_separator)
         (gcode_line
           (gcode_line_content
-            (gcode_command)
+            (gcode_command_name)
             (gcode_text)
             (gcode_command)
             (gcode_identifier)
@@ -487,7 +487,7 @@ gcode:
             (gcode_number)))
         (gcode_line
           (gcode_line_content
-            (gcode_command)
+            (gcode_command_name)
             (gcode_text)
             (gcode_command)
             (gcode_identifier)
@@ -532,3 +532,57 @@ gcode:
                 (jinja_keyword)
                 (jinja_builtin)))
             (gcode_text)))))))
+
+================================================================================
+gcode block: gcode parameter letter and value are separate tokens
+================================================================================
+
+[gcode_macro TEST]
+gcode:
+    G92 E0 F3000 X10.5
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (section
+    name: (section_name)
+    (section_item
+      (gcode_block
+        separator: (setting_separator)
+        (gcode_line
+          (gcode_line_content
+            command: (gcode_command_name)
+            (gcode_text)
+            (gcode_parameter)
+            (gcode_text)
+            (gcode_parameter)
+            (gcode_text)
+            (gcode_parameter)))))))
+
+================================================================================
+gcode block: klipper extended command name vs arg name vs arg value
+================================================================================
+
+[gcode_macro TEST]
+gcode:
+    SAVE_GCODE_STATE NAME=pause_gs RESPOND MSG="hello"
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (section
+    name: (section_name)
+    (section_item
+      (gcode_block
+        separator: (setting_separator)
+        (gcode_line
+          (gcode_line_content
+            command: (gcode_command_name)
+            (gcode_text)
+            (gcode_command)
+            (gcode_identifier)
+            (gcode_text)
+            (gcode_command)
+            (gcode_text)
+            (gcode_command)
+            (gcode_string)))))))
